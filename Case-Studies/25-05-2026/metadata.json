@@ -1,0 +1,206 @@
+{
+  "schemaVersion": "1.0",
+
+  "id": "eng-flipkart-microservices-2026",
+  "slug": "flipkart-microservices-security-assessment-2026",
+
+  "title": "Flipkart Microservices Architecture",
+  "summary": "Authorized security assessment of Flipkart's HackerOne Vulnerability Disclosure Program focusing on authentication services, API gateways and supporting microservices. The engagement identified a confirmed High severity CORS misconfiguration alongside several defense-in-depth weaknesses affecting authentication, input validation and legacy infrastructure.",
+
+  "featured": false,
+  "visibility": "public",
+
+  "organization": {
+    "name": "Flipkart",
+    "public": true,
+    "alias": null,
+    "website": "https://www.flipkart.com"
+  },
+
+  "industry": "E-Commerce",
+
+  "engagement": {
+    "type": "Bug Bounty",
+    "status": "Submitted",
+    "disclosureModel": "Coordinated",
+
+    "startedAt": "2026-05-01",
+    "submittedAt": "2026-06-15",
+    "acknowledgedAt": null,
+    "verifiedAt": null,
+    "closedAt": null,
+
+    "outcome": {
+      "remediation": "Pending",
+      "acknowledgement": "Pending",
+      "bounty": {
+        "awarded": false,
+        "amount": null
+      }
+    }
+  },
+
+  "classifications": {
+    "reportType": "HackerOne Vulnerability Disclosure Program",
+    "primaryCategory": "Cross-Origin Resource Sharing (CORS)",
+
+    "tags": [
+      "HackerOne",
+      "CORS",
+      "Authentication",
+      "JWT",
+      "Microservices",
+      "API Security",
+      "Node.js",
+      "Java",
+      "Express",
+      "Nginx",
+      "HAProxy",
+      "Istio"
+    ]
+  },
+
+  "findings": {
+    "total": 4,
+
+    "severity": {
+      "critical": 0,
+      "high": 1,
+      "medium": 2,
+      "low": 1,
+      "informational": 0
+    },
+
+    "categories": {
+      "xss": 0,
+      "sqli": 0,
+      "idor": 0,
+      "ssrf": 0,
+      "auth": 1,
+      "csrf": 0,
+      "rce": 0,
+      "lfi": 0,
+      "infoDisclosure": 0,
+      "misconfiguration": 2,
+      "businessLogic": 1,
+      "other": 1
+    }
+  },
+
+  "timeline": [
+    {
+      "phase": "Reconnaissance",
+      "date": "2026-05",
+      "summary": "Mapped the microservices architecture and enumerated public assets."
+    },
+    {
+      "phase": "Validation",
+      "date": "2026-05",
+      "summary": "Validated authentication, JWT handling, CORS behaviour and service configurations."
+    },
+    {
+      "phase": "Attack Chain",
+      "date": "2026-06",
+      "summary": "Demonstrated an end-to-end exploitation path leveraging permissive CORS to access authenticated user data."
+    },
+    {
+      "phase": "Disclosure",
+      "date": "2026-06",
+      "summary": "Compiled findings and submitted them through Flipkart's HackerOne program."
+    }
+  ],
+
+  "businessImpact": {
+    "confidentiality": {
+      "level": "High",
+      "summary": "Authenticated user information, including cart contents, addresses and access tokens, could potentially be read cross-origin."
+    },
+
+    "integrity": {
+      "level": "High",
+      "summary": "If complementary protections were absent, authenticated state-changing actions could potentially be performed."
+    },
+
+    "availability": {
+      "level": "Low",
+      "summary": "No meaningful denial-of-service impact was identified."
+    },
+
+    "privacy": {
+      "level": "High",
+      "summary": "Exposure of authenticated customer information presents significant privacy implications."
+    },
+
+    "regulatory": {
+      "level": "Medium",
+      "summary": "Compromise of customer information could create compliance obligations depending on affected jurisdictions."
+    },
+
+    "operational": {
+      "level": "High",
+      "summary": "Weak centralized CORS policy affected multiple production services, increasing systemic risk."
+    }
+  },
+
+  "risk": {
+    "methodology": "ALE",
+    "currency": "INR",
+    "singleLossExpectancy": null,
+    "annualRateOfOccurrence": null,
+    "residualAnnualRateOfOccurrence": null
+  },
+
+  "metrics": {
+    "hoursInvested": null,
+    "endpointsReviewed": null,
+    "requestsCaptured": null,
+    "attackChainsValidated": 1,
+    "findingsReported": 4,
+    "findingsConfirmed": 1,
+    "retestsPerformed": 0
+  },
+
+  "lessons": [
+    {
+      "category": "Architecture",
+      "summary": "Centralized authentication services require equally centralized security policy enforcement."
+    },
+    {
+      "category": "CORS",
+      "summary": "Origin reflection combined with credentialed requests can undermine otherwise robust authentication mechanisms."
+    },
+    {
+      "category": "Defense in Depth",
+      "summary": "Strong JWT validation and CSRF protections significantly reduced the impact of several investigated attack paths."
+    },
+    {
+      "category": "Legacy Systems",
+      "summary": "Outdated services increase organizational attack surface even when partially isolated."
+    }
+  ],
+
+  "related": {
+    "research": [
+      "authorization-flaws-deep-dive"
+    ],
+    "caseStudies": []
+  },
+
+  "cover": "/case-studies/flipkart-microservices/cover.png",
+
+  "readingTime": 20,
+
+  "seo": {
+    "description": "Case study covering an authorized security assessment of Flipkart's microservices architecture with emphasis on authentication, API security and a confirmed CORS misconfiguration.",
+    "keywords": [
+      "Flipkart",
+      "HackerOne",
+      "CORS",
+      "API Security",
+      "JWT",
+      "Application Security",
+      "Microservices",
+      "Responsible Disclosure"
+    ]
+  }
+}
