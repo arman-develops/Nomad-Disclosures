@@ -1,185 +1,240 @@
 {
-  "title": "Stored XSS in Used Car Inquiry Form — CarsDirect.com",
+  "schemaVersion": "1.0",
+
+  "id": "eng-carsdirect-stored-xss-2026",
   "slug": "carsdirect-stored-xss-2026",
-  "organization": "CarsDirect.com",
-  "organizationPublic": true,
-  "industry": "Automotive / E-Commerce",
-  "year": 2026,
-  "reportType": "Bug Bounty",
-  "severity": "High",
-  "status": "Patched",
-  "submittedAt": "2026-01-23",
-  "acknowledgedAt": null,
-  "verifiedAt": "2026-01-23",
-  "closedAt": null,
-  "findingsCount": 3,
-  "criticalFindings": 0,
-  "highFindings": 1,
+
+  "title": "Stored XSS in Used Car Inquiry Form — CarsDirect.com",
+
+  "summary": "Identified a stored Cross-Site Scripting vulnerability in the used car inquiry submission workflow that resulted in JavaScript execution inside the dealer CRM through blind XSS callbacks.",
+
   "featured": true,
-  "summary": "Identified a stored Cross-Site Scripting vulnerability in the used car inquiry submission form on CarsDirect.com. Attacker-controlled JavaScript payloads were stored in the lead management database and executed in the browser context of dealer and staff personnel when reviewing customer inquiries through their internal CRM. Confirmed via blind XSS methodology using webhook callbacks that received four execution confirmations from dealer IP addresses within 48-72 hours of submission.",
-  "tags": [
-    "XSS",
-    "Stored XSS",
-    "Blind XSS",
-    "CRM",
-    "Automotive",
-    "Bug Bounty",
-    "Bugcrowd",
-    "Java",
-    "Hibernate",
-    "Cloudflare Bypass",
-    "Lead Submission",
-    "Internal Systems"
+
+  "visibility": "public",
+
+  "organization": {
+    "name": "CarsDirect.com",
+    "public": true,
+    "alias": null,
+    "website": "https://carsdirect.com"
+  },
+
+  "industry": "Automotive / E-Commerce",
+
+  "engagement": {
+    "type": "Bug Bounty",
+    "status": "Verified",
+    "disclosureModel": "Coordinated",
+
+    "startedAt": "2026-01-11",
+    "submittedAt": "2026-01-23",
+    "acknowledgedAt": null,
+    "verifiedAt": "2026-01-23",
+    "closedAt": null
+  },
+
+  "classifications": {
+    "reportType": "Bug Bounty",
+
+    "primaryCategory": "Stored XSS",
+
+    "tags": [
+      "XSS",
+      "Stored XSS",
+      "Blind XSS",
+      "CRM",
+      "Automotive",
+      "Bugcrowd",
+      "Java",
+      "Hibernate"
+    ]
+  },
+
+  "findings": [
+      {
+        "id": "F-001",
+        "title": "Stored XSS via Used Car Inquiry Form",
+
+        "category": "XSS",
+
+        "severity": "High",
+
+        "status": "Patched",
+
+        "reportable": true,
+
+        "cwe": "CWE-79",
+
+        "cvss": 8.2
+      },
+
+      {
+        "id": "F-002",
+
+        "title": "Information Disclosure via Error Messages",
+
+        "category": "Information Disclosure",
+
+        "severity": "Informational",
+
+        "status": "Out of Scope",
+
+        "reportable": false,
+
+        "cwe": "CWE-209"
+      },
+
+      {
+        "id": "F-003",
+
+        "title": "Missing Email Validation",
+
+        "category": "Input Validation",
+
+        "severity": "Informational",
+
+        "status": "Not Reported",
+
+        "reportable": false,
+
+        "cwe": "CWE-20"
+      }
   ],
+
   "timeline": [
     {
+      "phase": "Discovery",
       "date": "2026-01-11",
-      "event": "Reconnaissance",
-      "description": "Initial manual browsing, technology stack identification, attack surface mapping. Identified Kubernetes test environment, Redis cache layer, Java/Hibernate backend, Cloudflare WAF."
+      "summary": "Reconnaissance and attack surface mapping."
     },
     {
+      "phase": "Validation",
       "date": "2026-01-11",
-      "event": "Injection Point Discovery",
-      "description": "Identified usedCarQuestions field in /services/leadsubmission/v2/submitUsedCarAndUserProfileLead as primary injection point. Direct XSS blocked by Cloudflare WAF. Blind XSS approach adopted."
+      "summary": "Blind XSS methodology adopted after WAF blocked direct payloads."
     },
     {
-      "date": "2026-01-11",
-      "event": "Blind XSS Deployment",
-      "description": "Configured webhook.site callback infrastructure. Submitted multiple payloads with image tag onerror handlers targeting dealer CRM execution context. Payload embedded within realistic car inquiry messages."
-    },
-    {
+      "phase": "Evidence Collection",
       "date": "2026-01-13",
-      "event": "Execution Confirmed",
-      "description": "Received four HTTP callbacks from dealer IP addresses confirming JavaScript execution. Callbacks included dealer network IP, browser User-Agent, and partial CRM URL data. Execution occurred 48-72 hours after submission during business hours."
+      "summary": "Received four webhook callbacks confirming execution inside dealer systems."
     },
     {
+      "phase": "Verification",
       "date": "2026-01-23",
-      "event": "Vulnerability Patched",
-      "description": "Subsequent testing confirmed the usedCarQuestions field no longer accepted XSS payloads. Vulnerability appears to have been remediated without formal acknowledgment."
+      "summary": "Retesting confirmed vulnerability had been remediated."
     }
   ],
-  "lessons": [
-    {
-      "id": 1,
-      "category": "Methodology",
-      "lesson": "Blind XSS bypasses WAF protection that blocks direct reflection. Stored payloads are not inspected by Cloudflare at execution time."
+
+  "businessImpact": {
+    "confidentiality": {
+      "level": "High",
+      "summary": "Execution within internal CRM could expose sensitive dealer and customer information."
     },
-    {
-      "id": 2,
-      "category": "Methodology",
-      "lesson": "Webhook callbacks are definitive proof of execution. Four confirmed hits from dealer IPs during business hours constitutes solid evidence."
+
+    "integrity": {
+      "level": "Medium",
+      "summary": "Potential manipulation of internal workflows through trusted browser execution."
     },
-    {
-      "id": 3,
-      "category": "Scope",
-      "lesson": "Public-facing forms often feed internal systems with weaker security posture. The security boundary between the inquiry form and dealer CRM was not maintained."
+
+    "availability": {
+      "level": "Low",
+      "summary": "No meaningful impact on system availability."
     },
-    {
-      "id": 4,
-      "category": "Tradecraft",
-      "lesson": "Compelling, realistic inquiry messages increase probability of dealer opening and reading the inquiry, triggering the XSS payload."
+
+    "privacy": {
+      "level": "High",
+      "summary": "Customer inquiries and dealer interactions could be exposed."
     },
-    {
-      "id": 5,
-      "category": "Tradecraft",
-      "lesson": "Image tag onerror handlers with this.src assignment are more reliable than fetch() which may be blocked by CSP on internal systems."
+
+    "regulatory": {
+      "level": "Medium",
+      "summary": "Potential privacy obligations if customer information were accessed."
     },
-    {
-      "id": 6,
-      "category": "Reporting",
-      "lesson": "Impact without exploit vector is observation, not vulnerability. Parallel WebMD assessment confirmed: triage requires a complete, realistic attack chain."
-    },
-    {
-      "id": 7,
-      "category": "Target Selection",
-      "lesson": "Targets without user accounts limit authorization testing. CarsDirect lacked user-to-user features, making blind XSS the primary viable attack surface."
-    },
-    {
-      "id": 8,
-      "category": "Time Management",
-      "lesson": "10 hours is the maximum productive investment per target at beginner level. Webhook monitoring can continue passively while testing other targets."
+
+    "operational": {
+      "level": "Medium",
+      "summary": "Compromise of dealer CRM sessions could affect sales operations."
     }
-  ],
-  "cover": "/case-studies/carsdirect-stored-xss/cover.png",
-  "vulnerabilities": [
-    {
-      "id": 1,
-      "title": "Stored XSS via Used Car Inquiry Form",
-      "severity": "High",
-      "status": "Patched",
-      "cvss": "8.2",
-      "cwe": "CWE-79",
-      "endpoint": "POST /services/leadsubmission/v2/submitUsedCarAndUserProfileLead",
-      "parameter": "usedCarQuestions",
-      "reportable": true
-    },
-    {
-      "id": 2,
-      "title": "Information Disclosure via Hibernate Error Messages",
-      "severity": "Informative",
-      "status": "Out of Scope",
-      "cvss": null,
-      "cwe": "CWE-209",
-      "endpoint": "POST /services/userprofile/v1/submitContactInfo",
-      "parameter": "pageUrl (removed)",
-      "reportable": false
-    },
-    {
-      "id": 3,
-      "title": "Missing Email Validation on Contact Forms",
-      "severity": "Informative",
-      "status": "Not Reported",
-      "cvss": null,
-      "cwe": "CWE-20",
-      "endpoint": "Multiple form endpoints",
-      "parameter": "email",
-      "reportable": false
-    }
-  ],
-  "environment": {
-    "cdn": "Cloudflare",
-    "loadBalancer": "F5 Big-IP",
-    "backend": "Java (Hibernate ORM)",
-    "cache": "Redis",
-    "infrastructure": "Kubernetes",
-    "frontend": "React",
-    "email": "SendGrid",
-    "authentication": "Cookie-based (JSESSIONID)"
   },
-  "proofOfConcept": {
-    "type": "Blind XSS with Webhook Callbacks",
-    "callbacksReceived": 4,
-    "executionDelay": "48-72 hours",
-    "executionContext": "Dealer CRM / Internal Lead Management System",
-    "payloadField": "usedCarQuestions",
-    "payloadType": "img src onerror"
+
+  "risk": {
+    "methodology": "ALE",
+
+    "currency": "USD",
+
+    "singleLossExpectancy": null,
+
+    "annualRateOfOccurrence": null,
+
+    "residualAnnualRateOfOccurrence": null
   },
-  "relatedResearch": [
-    {
-      "title": "Authorization Flaws: A Comprehensive Deep Dive",
-      "slug": "authorization-flaws-deep-dive",
-      "type": "Research Note"
-    },
-    {
-      "title": "WebMD Session Token Assessment",
-      "slug": "webmd-session-token-2026",
-      "type": "Case Study"
-    }
-  ],
-  "program": {
-    "platform": "Bugcrowd",
-    "name": "CarsDirect / WebMD Program",
-    "url": "https://bugcrowd.com",
-    "bountyAwarded": false,
-    "bountyAmount": null,
-    "note": "Vulnerability confirmed via blind XSS callbacks. Patched without formal acknowledgment or bounty response."
-  },
+
   "metrics": {
     "hoursInvested": 10,
-    "endpointsDiscovered": 12,
-    "payloadsSubmitted": 8,
-    "webhookCallbacks": 4,
-    "reportedFindings": 0,
-    "confirmedFindings": 1
+
+    "endpointsReviewed": 12,
+
+    "requestsCaptured": null,
+
+    "attackChainsValidated": 1,
+
+    "findingsReported": 1,
+
+    "findingsConfirmed": 1,
+
+    "retestsPerformed": 1
+  },
+
+  "lessons": [
+    {
+      "category": "Methodology",
+      "summary": "Blind XSS remains effective when direct reflection is blocked by a WAF."
+    },
+    {
+      "category": "Methodology",
+      "summary": "Webhook callbacks provide definitive execution evidence."
+    },
+    {
+      "category": "Architecture",
+      "summary": "Public forms often become trusted input for internal systems."
+    },
+    {
+      "category": "Tradecraft",
+      "summary": "Realistic payloads increase execution likelihood."
+    },
+    {
+      "category": "Reporting",
+      "summary": "Demonstrating business impact strengthens vulnerability reports."
+    },
+    {
+      "category": "Time Management",
+      "summary": "Time-boxing engagements helps maintain research efficiency."
+    }
+  ],
+
+  "related": {
+    "research": [
+      "authorization-flaws-deep-dive"
+    ],
+
+    "caseStudies": [
+      "webmd-session-token-2026"
+    ]
+  },
+
+  "cover": "/case-studies/carsdirect-stored-xss/cover.png",
+
+  "readingTime": 8,
+
+  "seo": {
+    "description": "Case study covering responsible disclosure of a Stored Cross-Site Scripting vulnerability affecting an automotive lead management workflow.",
+
+    "keywords": [
+      "Stored XSS",
+      "Blind XSS",
+      "Bug Bounty",
+      "Responsible Disclosure",
+      "CRM Security"
+    ]
   }
 }
+┌─[
