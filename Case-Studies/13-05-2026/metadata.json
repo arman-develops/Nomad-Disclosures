@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "1.0",
+  "id": "cs-cultbeauty-2026-02",
+  "slug": "cultbeauty-basket-idor-2026",
+  "title": "Unauthenticated Basket IDOR on a High-Traffic E-Commerce Platform",
+  "summary": "Identified an unauthenticated cross-user basket read vulnerability via GraphQL IDOR on cultbeauty.co.uk. Basket UUIDs assigned pre-authentication allowed any actor to read another user's basket contents with zero credentials. Confirmed valid by program; closed as duplicate of a 2024 report on a now out-of-scope target.",
+  "featured": false,
+  "visibility": "public",
+  "organization": {
+    "name": "Ingenuity E-Commerce (THG)",
+    "public": false,
+    "alias": "Ingenuity E-Commerce",
+    "website": "https://www.cultbeauty.co.uk"
+  },
+  "industry": "E-Commerce / Retail",
+  "engagement": {
+    "type": "Bug Bounty",
+    "status": "Closed",
+    "disclosureModel": "Coordinated",
+    "startedAt": "2026-02-01",
+    "submittedAt": "2026-02-01",
+    "acknowledgedAt": "2026-02-01",
+    "verifiedAt": null,
+    "closedAt": "2026-02-01",
+    "outcome": {
+      "remediation": "Not Verified",
+      "acknowledgement": "Duplicate",
+      "bounty": {
+        "awarded": false,
+        "amount": null
+      }
+    }
+  },
+  "classifications": {
+    "reportType": "Bug Bounty Submission",
+    "primaryCategory": "Broken Object Level Authorization (BOLA/IDOR)",
+    "tags": [
+      "graphql",
+      "idor",
+      "bola",
+      "unauthenticated",
+      "basket",
+      "ecommerce",
+      "information-disclosure",
+      "pre-authentication",
+      "shared-codebase",
+      "duplicate"
+    ]
+  },
+  "findings": {
+    "total": 2,
+    "severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "informational": 1
+    },
+    "categories": {
+      "xss": 0,
+      "sqli": 0,
+      "idor": 1,
+      "ssrf": 0,
+      "auth": 0,
+      "csrf": 0,
+      "rce": 0,
+      "lfi": 0,
+      "infoDisclosure": 1,
+      "misconfiguration": 1,
+      "businessLogic": 0,
+      "other": 0
+    }
+  },
+  "timeline": [
+    {
+      "phase": "Reconnaissance",
+      "date": "2026-02-01",
+      "summary": "Identified GraphQL endpoints, confirmed introspection enabled, retrieved full schema dump across 300+ types."
+    },
+    {
+      "phase": "Authorization Testing",
+      "date": "2026-02-01",
+      "summary": "Systematically tested high-priority mutations and queries. deleteAddress, cancelOrder, and logoutSession found to be properly authenticated. replaceAddress produced internal server error on cross-user ID."
+    },
+    {
+      "phase": "Basket IDOR Confirmed",
+      "date": "2026-02-01",
+      "summary": "Confirmed unauthenticated cross-user basket read. customer: null in response proves zero authentication required. Basket IDs confirmed to be assigned pre-authentication via localStorage."
+    },
+    {
+      "phase": "Impact Escalation",
+      "date": "2026-02-01",
+      "summary": "Tested basket checkout mutation for race condition and hijack vectors. Attempted to query richer fields (delivery address, vouchers, gift cards). Impact ceiling established at shopping intent data only."
+    },
+    {
+      "phase": "Submission",
+      "date": "2026-02-01",
+      "summary": "Finding submitted to Bugcrowd as P3. Assessed as P4 and marked duplicate of 2024 report on a now out-of-scope target."
+    },
+    {
+      "phase": "Closed",
+      "date": "2026-02-01",
+      "summary": "Engagement concluded. Vulnerability confirmed valid by duplicate classification. Codebase-wide exposure noted across malatan.co.uk and enjoyselfish.com."
+    }
+  ],
+  "businessImpact": {
+    "confidentiality": {
+      "level": "Low",
+      "summary": "Shopping intent data (SKUs, quantities, prices) exposed across all user sessions including guests. No PII, payment data, or account credentials accessible."
+    },
+    "integrity": {
+      "level": "Low",
+      "summary": "Cross-user basket merge observed when authenticated user submits another user's basket UUID. Item state mutations reflect across shared basket sessions."
+    },
+    "availability": {
+      "level": "Low",
+      "summary": "Basket state interference between sessions could disrupt a user's active shopping or checkout flow."
+    },
+    "privacy": {
+      "level": "Low",
+      "summary": "Shopping behaviour and product interest data exposed without consent. Affected population includes all site visitors, not only registered users."
+    },
+    "regulatory": {
+      "level": "Low",
+      "summary": "Potential UK GDPR consideration given exposure of behavioural data (purchasing intent) without authentication. No special category data involved."
+    },
+    "operational": {
+      "level": "Low",
+      "summary": "No material operational disruption identified. Basket interference is incidental rather than systematic."
+    }
+  },
+  "risk": {
+    "methodology": "ALE",
+    "currency": "KES",
+    "singleLossExpectancy": null,
+    "annualRateOfOccurrence": null,
+    "residualAnnualRateOfOccurrence": null
+  },
+  "metrics": {
+    "hoursInvested": 4,
+    "endpointsReviewed": 2,
+    "requestsCaptured": null,
+    "attackChainsValidated": 3,
+    "findingsReported": 1,
+    "findingsConfirmed": 1,
+    "retestsPerformed": 0
+  },
+  "lessons": [
+    {
+      "category": "Scope Research",
+      "summary": "Check program disclosed reports and duplicate history before deep-diving on a finding. A 2024 report on a shared codebase made this submission a duplicate despite the finding being valid and independently discovered."
+    },
+    {
+      "category": "Target Selection",
+      "summary": "In multi-target programs with a shared codebase, test the same vector across all in-scope targets before submitting. A program-wide finding affecting multiple named domains carries higher severity and lower duplicate risk."
+    },
+    {
+      "category": "Impact Scoping",
+      "summary": "Establish the impact ceiling before submission rather than after. Escalation testing (voucher codes, delivery address, checkout race condition) added ~2 hours without producing additional submittable impact."
+    },
+    {
+      "category": "GraphQL Methodology",
+      "summary": "Pre-authentication object creation (guest baskets, guest sessions) significantly broadens IDOR impact and is frequently overlooked. Always test ID-based queries from a zero-auth baseline before adding session context."
+    },
+    {
+      "category": "Severity Calibration",
+      "summary": "IDORs on low-sensitivity data (shopping carts, wishlists) without PII or payment data will trend toward P4 regardless of the elegance of the exploit chain. Know the severity line before investing time in a finding."
+    }
+  ],
+  "related": {
+    "research": [],
+    "caseStudies": []
+  },
+  "cover": null,
+  "readingTime": "8 min",
+  "seo": {
+    "description": "Case study: GraphQL basket IDOR on cultbeauty.co.uk allowing unauthenticated read of any user's shopping basket. Confirmed valid by Bugcrowd, closed as duplicate.",
+    "keywords": [
+      "GraphQL IDOR",
+      "bug bounty",
+      "basket IDOR",
+      "BOLA",
+      "unauthenticated access",
+      "e-commerce security",
+      "Bugcrowd",
+      "black box testing",
+      "GraphQL introspection"
+    ]
+  }
+}

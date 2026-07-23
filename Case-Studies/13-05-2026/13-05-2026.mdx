@@ -1,0 +1,187 @@
+# Unauthenticated Basket IDOR on a High-Traffic E-Commerce Platform
+
+**Organization:** Ingenuity E-Commerce (THG)  
+**Program Assessed:** Bugcrowd Bug Bounty — Ingenuity E-Commerce  
+**Assessment Duration:** February 2026 (single session, ~4 hours)  
+**Scope:** `https://*.cultbeauty.co.uk/`  
+**Assessment Type:** Bug Bounty — Black Box
+
+---
+
+## Executive Summary
+
+During a structured black-box assessment of cultbeauty.co.uk as part of the Bugcrowd Ingenuity E-Commerce bug bounty program, an Insecure Direct Object Reference (IDOR) vulnerability was identified in the platform's GraphQL basket API. The vulnerability allowed any unauthenticated actor to read the contents of any user's active shopping basket by supplying a known basket UUID — with no credentials, session token, or account required.
+
+The finding was confirmed through a clean proof of concept demonstrating cross-user basket access with `customer: null` in the server response, proving zero authentication was required. Further testing revealed that basket IDs are assigned and stored in the browser's local storage before any login or account creation occurs, broadening the affected population to all site visitors including guests.
+
+The finding was submitted to Bugcrowd and assessed as **P4 — Information Disclosure**, then marked as a **duplicate** of a report submitted in 2024 against a related target now removed from the program scope. The duplicate status confirmed the vulnerability's validity and the soundness of the discovery methodology, while highlighting that the underlying issue persisted across the shared codebase even as individual targets rotated in and out of scope.
+
+---
+
+## Scope and Methodology
+
+### Target Overview
+
+cultbeauty.co.uk is a high-traffic UK beauty and lifestyle e-commerce platform operated under THG's Ingenuity E-Commerce infrastructure. The platform is built on Astro with Varnish caching and exposes a GraphQL API at two primary endpoints:
+
+- `/account/graphql` — account management, authentication, and loyalty operations
+- `/api/graphql` — storefront operations including basket, products, and content
+
+The platform serves a broad consumer audience including unauthenticated guest shoppers, making any pre-authentication vulnerability particularly high impact in terms of affected population.
+
+### Methodology
+
+Testing followed a structured black-box GraphQL assessment approach:
+
+**Phase 1 — Passive Recon**  
+Network traffic observation to identify API endpoints, request patterns, and technology stack. Confirmed GraphQL as the primary data layer and identified two distinct endpoint paths.
+
+**Phase 2 — Schema Enumeration**  
+Confirmed GraphQL introspection was enabled in production with a single unauthenticated `__schema` query. Retrieved the full schema — over 300 named types — and categorised the attack surface by sensitivity: account/auth types, order/payment types, address types, and basket/session objects.
+
+**Phase 3 — Authorization Testing**  
+Systematically tested high-priority mutations and queries for object-level authorization failures. Tested `deleteAddress`, `replaceAddress`, `cancelOrder`, `logoutSession`, and `basket` against cross-user and unauthenticated access patterns.
+
+**Phase 4 — Basket IDOR Exploitation**  
+Identified that the basket query accepts an optional `id` parameter with no ownership validation. Confirmed unauthenticated read access to arbitrary baskets and traced the basket ID lifecycle from pre-authentication local storage assignment through to checkout initiation.
+
+**Phase 5 — Impact Escalation Attempts**  
+Attempted to query richer fields on the basket object (delivery address, voucher codes, gift card data) to elevate impact. Tested the checkout mutation for cross-user exploitation. Investigated whether the basket mutation/hijack behavior introduced a race condition in the payment flow. All escalation paths reached their ceiling without producing additional confirmed impact.
+
+---
+
+## Findings
+
+### Finding 1: Unauthenticated Cross-User Basket Read (IDOR)
+
+**Severity:** P4 — Information Disclosure  
+**Status:** Duplicate (original report 2024, out-of-scope target)  
+**CVSS:** CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
+
+#### Description
+
+The GraphQL `basket` query at `/api/graphql` accepts an optional `id` parameter representing a basket UUID. The server resolves and returns basket state based solely on the client-supplied UUID, with no verification that the requesting session owns or has permission to access the referenced basket. This constitutes a Broken Object Level Authorization (BOLA/IDOR) vulnerability.
+
+#### Technical Detail
+
+Basket IDs follow the format `<UUID>:<unix_millisecond_timestamp>`. The UUID is the stable server-side identifier; the timestamp is a revision counter that increments on each mutation. The server resolves the latest basket state for any UUID supplied, regardless of the timestamp suffix.
+
+Basket IDs are written to browser `localStorage` before any login or account creation occurs, meaning every site visitor — including unauthenticated guests — is assigned a basket ID that can be used to retrieve their basket contents by any third party who obtains the UUID.
+
+The following request was sent with **no cookies and no session tokens**, using a UUID belonging to a different user:
+
+```http
+POST /api/graphql?operationName=InitialPageLoad HTTP/1.1
+Host: www.cultbeauty.co.uk
+Content-Type: application/json
+
+{
+  "operation": "InitialPageLoad",
+  "variables": {
+    "id": "<TARGET_BASKET_UUID>:<TIMESTAMP>",
+    "currency": "GBP",
+    "shippingDestination": "GB",
+    "getCustomerID": true,
+    ...
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "customer": null,
+    "basket": {
+      "id": "17611e06-d809-4afc-b3ac-938f920c5f50:1771061940118",
+      "items": [{
+        "id": "17638902",
+        "quantity": 1,
+        "product": { "sku": 17638902 },
+        "chargePricePerUnit": { "amount": "38.00" }
+      }]
+    }
+  }
+}
+```
+
+`customer: null` confirms the request was fully unauthenticated. The target basket's contents — SKU, quantity, and price — were returned in full.
+
+**Additional behaviors observed:**
+
+- Submitting another user's basket UUID while authenticated caused the server to merge or associate that basket with the requesting session (`error: "BASKETS_MERGED"` in the checkout mutation), constituting unauthorized cross-user state manipulation
+- Item removal on one session was reflected on the other session sharing the UUID, confirming both operated on the same server-side basket object
+- The same vulnerability was confirmed to exist on at least two other properties in the Ingenuity E-Commerce program (`malatan.co.uk`, `enjoyselfish.com`) due to shared codebase
+
+#### Business Impact
+
+An attacker who obtains a victim's basket UUID can read the products the victim is actively considering purchasing, including SKUs, quantities, and prices. Basket UUIDs could be obtained via XSS, shared devices, browser extensions, referrer header leakage, or network interception. The pre-authentication nature of basket creation means the affected population is every site visitor, not only registered users.
+
+The data exposed is shopping intent only — no PII, payment data, delivery addresses, or account credentials were accessible through this endpoint.
+
+#### Scope Note
+
+The vulnerability was marked as a duplicate of a report submitted in 2024 against a target that has since been removed from the program scope. The persistence of the vulnerability across the shared codebase to currently in-scope properties suggests the underlying issue was not fully remediated at the platform level.
+
+---
+
+### Finding 2: GraphQL Introspection Enabled in Production (Noted, Not Submitted)
+
+**Severity:** P5 — Informational  
+**Status:** Not submitted (below program submission threshold)
+
+#### Description
+
+The GraphQL endpoint at `/account/graphql` has introspection enabled in the production environment, allowing any unauthenticated client to retrieve the complete API schema including all types, queries, mutations, field names, and argument signatures.
+
+#### Technical Detail
+
+A single unauthenticated `__schema` query returned over 300 named types and the complete list of available queries and mutations with their argument structures. This schema data directly informed the discovery of the basket IDOR and identified additional attack surface including account management mutations and order/payment types.
+
+#### Business Impact
+
+Introspection accelerates reconnaissance by an attacker, reducing the effort required to identify authorization gaps, sensitive mutations, and undocumented functionality. It does not constitute a direct vulnerability on its own but materially lowers the barrier to discovering other issues.
+
+---
+
+## Methodology Evaluation
+
+**What worked well:**
+
+The structured GraphQL recon approach — introspection first, schema categorisation, then systematic authorization testing — produced a confirmed finding efficiently. Prioritising basket/session objects as often-overlooked targets in GraphQL assessments was the key insight that led to the discovery.
+
+Recognising that basket IDs are assigned pre-authentication significantly strengthened the finding's impact narrative. Most IDOR testing assumes a registered user context; testing from a guest/unauthenticated baseline expanded the affected population.
+
+The decision to test impact escalation paths (richer basket fields, checkout flow, race condition analysis) before submitting was valuable. It accurately established the impact ceiling and prevented overstatement of severity in the report.
+
+**What could be improved:**
+
+Time investment was disproportionate relative to outcome. Approximately 2-3 hours were spent on impact escalation after the core finding was confirmed, ultimately adding no new submittable impact. A 30-minute ceiling on escalation attempts after the core finding would have been more efficient.
+
+Checking for existing disclosed reports in the program before deep-diving on the finding would have surfaced the 2024 duplicate risk earlier. Many Bugcrowd programs publish disclosed reports or at minimum list out-of-scope duplicate findings.
+
+The finding was not tested against all in-scope targets before submission. Submitting as a program-wide finding affecting multiple named domains may have increased severity and reduced duplicate risk.
+
+---
+
+## Recommendations
+
+For the platform operator:
+
+**Basket API:**  
+Bind basket resolution to the authenticated session on the server side. If a session is present, verify the basket belongs to that user before returning data. For guest baskets, implement server-side ownership binding rather than relying solely on UUID secrecy. Audit the fix across all properties sharing the Ingenuity codebase simultaneously.
+
+**GraphQL Introspection:**  
+Disable introspection in production across all endpoints. Restrict it to internal network ranges or authenticated admin sessions if required for tooling. Most GraphQL server libraries support an `introspection: false` configuration flag.
+
+**Object-Level Authorization:**  
+Audit all GraphQL queries and mutations that accept an `id` argument to ensure consistent ownership validation is applied. The `replaceAddress` mutation was observed to return an Internal Server Error when supplied a cross-user address ID, suggesting authorization checks are inconsistent across the API surface — some endpoints check ownership, others crash, and others (basket) return data freely.
+
+---
+
+## Conclusion
+
+This engagement successfully identified a real vulnerability through structured black-box methodology, confirmed by the program's duplicate classification against a prior valid report. The core lesson was one of timing and target prioritisation: the vulnerability existed and was findable, but had already been found. In a shared-codebase program with multiple rotating targets, scope hygiene and early duplicate research are as important as technical methodology.
+
+The engagement produced a clean, reproducible proof of concept with accurate impact scoping — neither underselling the finding nor overstating it. That discipline, more than the finding itself, is the transferable skill this engagement reinforced.
