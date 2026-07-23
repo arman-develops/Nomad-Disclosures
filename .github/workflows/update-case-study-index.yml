@@ -1,0 +1,39 @@
+name: Update Case Study Index
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate index
+        run: node scripts/generate-case-study-index.mjs
+
+      - name: Commit updated index
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add Case-Studies/.index.json
+
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+
+          git commit -m "chore: update case study index"
+
+          git push
