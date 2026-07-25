@@ -1,23 +1,23 @@
 {
   "schemaVersion": "1.0",
 
-  "id": "eng-city-of-vienna-2026",
-  "slug": "city-of-vienna-digital-infrastructure-2026",
+  "id": "eng-public-sector-identity-platform-2026",
+  "slug": "public-sector-identity-platform-2026",
 
-  "title": "City of Vienna Digital Infrastructure",
-  "summary": "Independent application security assessment conducted through the City of Vienna's public Bugcrowd program. The engagement identified multiple accepted information disclosure findings and demonstrated how individually low-severity issues can combine into meaningful attack chains.",
+  "title": "Identity Platform Security Assessment",
+  "summary": "Independent application security assessment of a public sector digital platform. The engagement demonstrated how individually low-risk information disclosures can collectively improve attacker reconnaissance and reduce the effort required to understand an organization's authentication architecture. The findings reinforced the value of defense-in-depth and careful management of implementation details exposed to external users.",
 
   "featured": false,
   "visibility": "public",
 
   "organization": {
-    "name": "City of Vienna",
-    "public": true,
-    "alias": "Stadt Wien",
-    "website": "https://www.wien.gv.at"
+    "name": null,
+    "public": false,
+    "alias": "Public Sector Organization",
+    "website": null
   },
 
-  "industry": "Government / Public Administration",
+  "industry": "Public Sector",
 
   "engagement": {
     "type": "Bug Bounty",
@@ -28,25 +28,29 @@
     "submittedAt": "2026-02-09",
     "acknowledgedAt": "2026-02-14",
     "verifiedAt": "2026-02-14",
-    "closedAt": "2026-02-14"
+    "closedAt": "2026-02-14",
+
+    "outcome": {
+      "remediation": "Verified",
+      "acknowledgement": "Accepted",
+      "bounty": null,
+      "awarded": false,
+      "amount": null
+    }
   },
 
   "classifications": {
-    "reportType": "Authorized Bug Bounty",
-
+    "reportType": "Authorized Security Assessment",
     "primaryCategory": "Information Disclosure",
 
     "tags": [
-      "Bugcrowd",
-      "Government",
-      "SAML",
-      "Azure AD",
       "Information Disclosure",
+      "Identity Platform",
       "Authentication",
-      "Reconnaissance",
-      "OWASP WSTG",
       "Defense in Depth",
-      "Application Security"
+      "Application Security",
+      "Reconnaissance",
+      "Security Assessment"
     ]
   },
 
@@ -81,59 +85,59 @@
     {
       "phase": "Discovery",
       "date": "2026-02-05",
-      "summary": "Reconnaissance, authentication analysis and attack surface mapping completed."
+      "summary": "Attack surface mapping and authentication workflow review completed."
     },
     {
       "phase": "Validation",
       "date": "2026-02-05",
-      "summary": "Validated four independent information disclosure findings while confirming cryptographic controls remained effective."
+      "summary": "Multiple independent information disclosure observations were validated while confirming core authentication controls remained effective."
     },
     {
       "phase": "Disclosure",
-      "date": "2026-02-05",
-      "summary": "Submitted findings through the Bugcrowd managed bug bounty program."
+      "date": "2026-02-09",
+      "summary": "Findings were reported through the organization's coordinated disclosure process."
     },
     {
-      "phase": "Acknowledged",
-      "date": "2026-02-05",
-      "summary": "All submissions accepted by Bugcrowd triage as valid informational findings."
+      "phase": "Acknowledgement",
+      "date": "2026-02-14",
+      "summary": "The organization accepted the reported observations and completed the engagement process."
     },
     {
-      "phase": "Closed",
-      "date": "2026-02-05",
-      "summary": "Engagement concluded after triage and documentation."
+      "phase": "Closure",
+      "date": "2026-02-14",
+      "summary": "Assessment concluded following validation and documentation."
     }
   ],
 
   "businessImpact": {
     "confidentiality": {
       "level": "Medium",
-      "summary": "Information disclosure reduced attacker effort by exposing internal implementation details."
+      "summary": "Implementation details reduced the effort required for reconnaissance against authentication infrastructure."
     },
 
     "integrity": {
       "level": "Low",
-      "summary": "No direct integrity impact demonstrated."
+      "summary": "No direct integrity compromise was demonstrated."
     },
 
     "availability": {
       "level": "None",
-      "summary": "No availability impact identified."
+      "summary": "No service disruption risk was identified."
     },
 
     "privacy": {
       "level": "Low",
-      "summary": "No personal data exposure was demonstrated."
+      "summary": "No exposure of personal or regulated information was demonstrated."
     },
 
     "regulatory": {
       "level": "Low",
-      "summary": "Findings support GDPR defense-in-depth objectives but did not demonstrate regulatory non-compliance."
+      "summary": "The observations supported security hardening and defense-in-depth objectives."
     },
 
     "operational": {
       "level": "Medium",
-      "summary": "Collective disclosures reduced the effort required to understand internal architecture and potential attack paths."
+      "summary": "Collectively, the disclosed information reduced attacker effort during reconnaissance and architecture mapping."
     }
   },
 
@@ -157,20 +161,20 @@
 
   "lessons": [
     {
-      "category": "Methodology",
-      "summary": "Information disclosure findings should be evaluated as components of larger attack chains rather than in isolation."
-    },
-    {
-      "category": "Reporting",
-      "summary": "Demonstrating attacker impact is often more important than simply identifying exposed information."
+      "category": "Business Risk",
+      "summary": "Seemingly minor disclosures can accumulate into valuable intelligence for attackers, making systematic hardening an important part of organizational security."
     },
     {
       "category": "Defense in Depth",
-      "summary": "Strong cryptographic controls successfully prevented exploitation despite supporting information disclosures."
+      "summary": "Well-implemented authentication and cryptographic controls can significantly limit exploitation even when supporting information is exposed."
     },
     {
-      "category": "Application Security",
-      "summary": "Verbose error messages significantly accelerate attacker reconnaissance."
+      "category": "Secure Design",
+      "summary": "Reducing unnecessary implementation detail in public-facing systems increases the cost of reconnaissance without affecting legitimate users."
+    },
+    {
+      "category": "Security Operations",
+      "summary": "Coordinated disclosure provides organizations an opportunity to improve resilience before technical observations become widely known."
     }
   ],
 
@@ -181,20 +185,20 @@
     "caseStudies": []
   },
 
-  "cover": "/case-studies/city-of-vienna/cover.png",
+  "cover": "/case-studies/public-sector-identity-platform/cover.png",
 
   "readingTime": 18,
 
   "seo": {
-    "description": "Independent application security assessment of the City of Vienna's public digital infrastructure conducted through the Bugcrowd managed bug bounty program.",
+    "description": "Business-focused case study examining how information disclosure can support attacker reconnaissance and why defense-in-depth remains essential for modern digital platforms.",
     "keywords": [
-      "City of Vienna",
-      "Bugcrowd",
-      "Government Security",
-      "Information Disclosure",
-      "SAML Security",
       "Application Security",
-      "Responsible Disclosure"
+      "Information Disclosure",
+      "Defense in Depth",
+      "Responsible Disclosure",
+      "Business Risk",
+      "Identity Security",
+      "Public Sector Security"
     ]
   }
 }

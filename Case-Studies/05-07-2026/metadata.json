@@ -1,15 +1,15 @@
 {
   "schemaVersion": "1.0",
   "id": "vdp-2026-ecommerce-retailer-01",
-  "slug": "full-chain-compromise-regional-ecommerce-platform",
-  "title": "Full-Chain Compromise of a Regional E-Commerce Platform",
-  "summary": "A self-initiated responsible disclosure engagement uncovering unauthenticated account takeover (including admin accounts), two independent SQL injection vulnerabilities, and exposure of live third-party payment and messaging credentials across two separate customer databases.",
-  "featured": true,
+  "slug": "sql-injection-account-takeover-ecommerce-platform",
+  "title": "SQL Injection and Account Takeover on E-Commerce Platform",
+  "summary": "A self-initiated responsible disclosure engagement uncovering unauthenticated account takeover (including admin accounts), two independent SQL injection vulnerabilities, and exposure of live third-party credentials across two separate customer databases.",
+  "featured": false,
   "visibility": "public",
   "organization": {
     "name": null,
     "public": false,
-    "alias": "Retailer A",
+    "alias": "E-Commerce Retailer",
     "website": null
   },
   "industry": "E-commerce / Retail",
@@ -17,8 +17,8 @@
     "type": "Responsible Disclosure",
     "status": "Submitted",
     "disclosureModel": "Coordinated",
-    "startedAt": "2026-07-05",
-    "submittedAt": "2026-07-07",
+    "startedAt": "2026-07-04",
+    "submittedAt": "2026-07-10",
     "acknowledgedAt": null,
     "verifiedAt": null,
     "closedAt": null,
@@ -72,58 +72,58 @@
     {
       "phase": "Reconnaissance & Authentication Testing",
       "date": "2026-07-04",
-      "summary": "Subdomain enumeration, port scan, and full authentication flow testing (login, signup, password reset) uncovered the first IDOR cluster and the account-takeover primitive."
+      "summary": "Authentication flow testing uncovered account-takeover primitive."
     },
     {
       "phase": "Blind SQL Injection Discovery",
       "date": "2026-07-05",
-      "summary": "Differential testing on an address-deletion endpoint isolated a boolean-based blind SQL injection in its pre-delete validation query."
+      "summary": "Differential testing identified boolean-based blind SQL injection."
     },
     {
-      "phase": "Blind Injection Escalation & UNION Discovery",
+      "phase": "UNION-Based SQL Injection Discovery",
       "date": "2026-07-06",
-      "summary": "Database name, schema, and table structure extracted via blind boolean injection; a second, UNION-based injection was independently discovered on a related endpoint, yielding direct row-level data access."
+      "summary": "UNION-based injection discovered on related endpoint yielding direct data access."
     },
     {
       "phase": "Exploitation Boundary Testing",
       "date": "2026-07-07",
-      "summary": "Attempts to escalate to file write, UDF-based code execution, and privilege escalation were all tested and found blocked by database-level privilege restrictions."
+      "summary": "Escalation attempts blocked by database-level privilege restrictions."
     },
     {
       "phase": "Extended Scope Discovery",
       "date": "2026-07-15",
-      "summary": "Cross-schema enumeration from the same injection point revealed a second, independent application database containing live third-party API credentials and a separate 1,100+ record customer base."
+      "summary": "Cross-schema enumeration revealed second customer database with live credentials."
     },
     {
       "phase": "Reporting & Disclosure",
       "date": "2026-07-10",
-      "summary": "Findings compiled into a structured technical report and executive summary; outreach initiated across multiple public contact channels to establish a secure disclosure point of contact."
+      "summary": "Findings compiled; outreach initiated to establish secure disclosure channel."
     }
   ],
   "businessImpact": {
     "confidentiality": {
       "level": "Critical",
-      "summary": "Unauthenticated read access to full customer PII across two separate databases, plus administrator credential hashes and live third-party API secrets."
+      "summary": "Unauthenticated read access to full customer PII across two databases, plus administrator credentials and live third-party API secrets."
     },
     "integrity": {
       "level": "Critical",
-      "summary": "Unauthenticated write access to any user's cart, address, and profile data, including the ability to alter the phone number of any account — including administrator accounts."
+      "summary": "Unauthenticated write access to any user's data, including administrator accounts."
     },
     "availability": {
       "level": "Medium",
-      "summary": "No direct denial-of-service vector confirmed; cart/address tampering could disrupt individual order fulfillment but did not threaten platform-wide availability."
+      "summary": "No denial-of-service confirmed; data tampering could disrupt order fulfillment."
     },
     "privacy": {
       "level": "Severe",
-      "summary": "Full names, national ID numbers, phone numbers, physical addresses, and financial balance data exposed for well over a thousand individuals across two customer databases."
+      "summary": "Full names, national ID numbers, phone numbers, addresses, and financial data exposed."
     },
     "regulatory": {
       "level": "High",
-      "summary": "Data categories exposed fall within scope of Kenya's Data Protection Act, 2019; a real-world exploitation would very likely constitute a notifiable breach."
+      "summary": "Exposed data categories fall within scope of national data protection legislation."
     },
     "operational": {
       "level": "High",
-      "summary": "Live payment gateway and messaging provider credentials were confirmed exposed, creating a live operational risk independent of the underlying application vulnerabilities."
+      "summary": "Live payment and messaging provider credentials confirmed exposed."
     }
   },
   "risk": {
@@ -131,10 +131,7 @@
     "currency": "KES",
     "singleLossExpectancy": 8500000,
     "annualRateOfOccurrence": 0.65,
-    "residualAnnualRateOfOccurrence": 0.03,
-    "aleBefore": 5525000,
-    "aleAfter": 255000,
-    "annualizedRiskReduction": 5270000
+    "residualAnnualRateOfOccurrence": 0.03
   },
   "metrics": {
     "hoursInvested": 42,
@@ -148,23 +145,23 @@
   "lessons": [
     {
       "category": "Testing Discipline",
-      "summary": "Never change more than one variable per test window once inside a live chain — an overlapping injection attempt and a checkout test in the same session produced an anomaly that cost a full phase to (eventually) explain away."
+      "summary": "Never change more than one variable per test window once inside a live chain."
     },
     {
       "category": "Extraction Ethics",
-      "summary": "Stop pulling rows the moment a read primitive is proven. A count query or a single representative record demonstrates impact as well as a bulk dump does, without the added exposure."
+      "summary": "Stop pulling rows the moment a read primitive is proven."
     },
     {
       "category": "Severity Reasoning",
-      "summary": "Live, currently-usable credentials (payment gateways, messaging providers) are a different risk category from static data exposure — they represent active capability, not just leaked information, and should be triaged and communicated with more urgency."
+      "summary": "Live, currently-usable credentials are a different risk category from static data exposure."
     },
     {
       "category": "Architecture Awareness",
-      "summary": "The presence of admin accounts inside the same table as ordinary users, distinguished only by a flag, meant an unrelated authorization bug automatically became an admin-account-takeover bug."
+      "summary": "Admin accounts in same table as users, distinguished only by a flag, amplifies authorization bugs."
     },
     {
       "category": "Program Process",
-      "summary": "Self-initiated disclosure to an organization with no published security contact is materially slower than a defined bug bounty program — outreach had to be spread across a contact form, WhatsApp, and a social media page simultaneously just to establish a channel."
+      "summary": "Self-initiated disclosure to organizations with no published security contact is materially slower."
     }
   ],
   "related": {
@@ -174,14 +171,13 @@
   "cover": null,
   "readingTime": 16,
   "seo": {
-    "description": "Case study: a self-initiated responsible disclosure engagement against a regional e-commerce platform, uncovering unauthenticated account takeover, two independent SQL injection vulnerabilities, and live third-party credential exposure across two separate customer databases.",
+    "description": "Case study: responsible disclosure engagement against e-commerce platform, uncovering SQL injection, account takeover, and credential exposure.",
     "keywords": [
       "responsible disclosure",
-      "sql injection case study",
+      "sql injection",
       "idor",
       "account takeover",
-      "api security kenya",
-      "vulnerability disclosure program"
+      "vulnerability disclosure"
     ]
   }
 }

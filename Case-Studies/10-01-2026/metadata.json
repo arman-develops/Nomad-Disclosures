@@ -1,106 +1,70 @@
 {
   "schemaVersion": "1.0",
-
-  "id": "eng-carsdirect-stored-xss-2026",
-  "slug": "carsdirect-stored-xss-2026",
-
-  "title": "Stored XSS in Used Car Inquiry Form — CarsDirect.com",
-
-  "summary": "Identified a stored Cross-Site Scripting vulnerability in the used car inquiry submission workflow that resulted in JavaScript execution inside the dealer CRM through blind XSS callbacks.",
-
-  "featured": true,
-
+  "id": "eng-automotive-marketplace-stored-xss-2026",
+  "slug": "automotive-marketplace-stored-xss-2026",
+  "title": "Stored XSS in Vehicle Inquiry Form — Automotive Marketplace",
+  "summary": "Identified a stored Cross-Site Scripting vulnerability in the vehicle inquiry submission workflow that resulted in JavaScript execution inside the dealer CRM through blind XSS callbacks.",
+  "featured": false,
   "visibility": "public",
-
   "organization": {
-    "name": "CarsDirect.com",
-    "public": true,
-    "alias": null,
-    "website": "https://carsdirect.com"
+    "name": null,
+    "public": false,
+    "alias": "Automotive Marketplace",
+    "website": null
   },
-
   "industry": "Automotive / E-Commerce",
-
   "engagement": {
     "type": "Bug Bounty",
     "status": "Verified",
     "disclosureModel": "Coordinated",
-
     "startedAt": "2026-01-11",
     "submittedAt": "2026-01-15",
     "acknowledgedAt": null,
     "verifiedAt": "2026-01-23",
     "closedAt": "2026-01-15"
   },
-
   "classifications": {
     "reportType": "Bug Bounty",
-
     "primaryCategory": "Stored XSS",
-
     "tags": [
       "XSS",
       "Stored XSS",
       "Blind XSS",
       "CRM",
       "Automotive",
-      "Bugcrowd",
-      "Java",
-      "Hibernate"
+      "Bugcrowd"
     ]
   },
-
   "findings": [
-      {
-        "id": "F-001",
-        "title": "Stored XSS via Used Car Inquiry Form",
-
-        "category": "XSS",
-
-        "severity": "High",
-
-        "status": "Patched",
-
-        "reportable": true,
-
-        "cwe": "CWE-79",
-
-        "cvss": 8.2
-      },
-
-      {
-        "id": "F-002",
-
-        "title": "Information Disclosure via Error Messages",
-
-        "category": "Information Disclosure",
-
-        "severity": "Informational",
-
-        "status": "Out of Scope",
-
-        "reportable": false,
-
-        "cwe": "CWE-209"
-      },
-
-      {
-        "id": "F-003",
-
-        "title": "Missing Email Validation",
-
-        "category": "Input Validation",
-
-        "severity": "Informational",
-
-        "status": "Not Reported",
-
-        "reportable": false,
-
-        "cwe": "CWE-20"
-      }
+    {
+      "id": "F-001",
+      "title": "Stored XSS via Vehicle Inquiry Form",
+      "category": "XSS",
+      "severity": "High",
+      "status": "Patched",
+      "reportable": true,
+      "cwe": "CWE-79",
+      "cvss": 8.2
+    },
+    {
+      "id": "F-002",
+      "title": "Information Disclosure via Error Messages",
+      "category": "Information Disclosure",
+      "severity": "Informational",
+      "status": "Out of Scope",
+      "reportable": false,
+      "cwe": "CWE-209"
+    },
+    {
+      "id": "F-003",
+      "title": "Missing Email Validation",
+      "category": "Input Validation",
+      "severity": "Informational",
+      "status": "Not Reported",
+      "reportable": false,
+      "cwe": "CWE-20"
+    }
   ],
-
   "timeline": [
     {
       "phase": "Discovery",
@@ -123,67 +87,48 @@
       "summary": "Retesting confirmed vulnerability had been remediated."
     }
   ],
-
   "businessImpact": {
     "confidentiality": {
       "level": "High",
       "summary": "Execution within internal CRM could expose sensitive dealer and customer information."
     },
-
     "integrity": {
       "level": "Medium",
       "summary": "Potential manipulation of internal workflows through trusted browser execution."
     },
-
     "availability": {
       "level": "Low",
       "summary": "No meaningful impact on system availability."
     },
-
     "privacy": {
       "level": "High",
       "summary": "Customer inquiries and dealer interactions could be exposed."
     },
-
     "regulatory": {
       "level": "Medium",
       "summary": "Potential privacy obligations if customer information were accessed."
     },
-
     "operational": {
       "level": "Medium",
       "summary": "Compromise of dealer CRM sessions could affect sales operations."
     }
   },
-
   "risk": {
     "methodology": "ALE",
-
     "currency": "USD",
-
     "singleLossExpectancy": null,
-
     "annualRateOfOccurrence": null,
-
     "residualAnnualRateOfOccurrence": null
   },
-
   "metrics": {
     "hoursInvested": 10,
-
     "endpointsReviewed": 12,
-
     "requestsCaptured": null,
-
     "attackChainsValidated": 1,
-
     "findingsReported": 1,
-
     "findingsConfirmed": 1,
-
     "retestsPerformed": 1
   },
-
   "lessons": [
     {
       "category": "Methodology",
@@ -210,24 +155,14 @@
       "summary": "Time-boxing engagements helps maintain research efficiency."
     }
   ],
-
   "related": {
-    "research": [
-      "authorization-flaws-deep-dive"
-    ],
-
-    "caseStudies": [
-      "webmd-session-token-2026"
-    ]
+    "research": [],
+    "caseStudies": []
   },
-
-  "cover": "/case-studies/carsdirect-stored-xss/cover.png",
-
+  "cover": null,
   "readingTime": 8,
-
   "seo": {
     "description": "Case study covering responsible disclosure of a Stored Cross-Site Scripting vulnerability affecting an automotive lead management workflow.",
-
     "keywords": [
       "Stored XSS",
       "Blind XSS",
@@ -237,4 +172,3 @@
     ]
   }
 }
-┌─[

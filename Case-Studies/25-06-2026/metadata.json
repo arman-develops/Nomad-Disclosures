@@ -1,40 +1,36 @@
 {
   "schemaVersion": "1.0",
-  "id": "cs-2026-001",
-  "slug": "ktda-recruitment-platform-vdp",
-  "title": "Account Takeover and Systemic IDOR in a National Agricultural Body's Recruitment Platform",
-  "summary": "A self-initiated responsible disclosure against a national agricultural body's online recruitment platform uncovered a critical authentication bypass enabling full account takeover of any registered applicant, alongside a systemic broken access control vulnerability exposing applicant PII across multiple endpoints. Findings were acknowledged within 72 hours and a technical review meeting was convened the following week.",
-  "featured": true,
+  "id": "cs-agricultural-recruitment-platform-2026",
+  "slug": "agricultural-recruitment-platform-account-takeover",
+  "title": "Account Takeover and Systemic IDOR in National Agricultural Body Recruitment Platform",
+  "summary": "Self-initiated responsible disclosure uncovering critical authentication bypass enabling full account takeover, alongside systemic broken access control exposing applicant PII across multiple endpoints. Findings acknowledged within 72 hours.",
+  "featured": false,
   "visibility": "public",
-
   "organization": {
-    "name": "[Redacted — national agricultural body, Kenya]",
+    "name": null,
     "public": false,
-    "alias": "KTDA",
-    "website": "[redacted]"
+    "alias": "National Agricultural Body, Kenya",
+    "website": null
   },
-
   "industry": "Agriculture / Public Sector",
-
   "engagement": {
     "type": "Responsible Disclosure",
     "status": "Acknowledged",
     "disclosureModel": "Coordinated",
-    "startedAt": "2026-06-25",
-    "submittedAt": "2026-06-28",
-    "acknowledgedAt": "2026-07-02",
+    "startedAt": "2026-06-01",
+    "submittedAt": "2026-06-20",
+    "acknowledgedAt": "2026-06-21",
     "verifiedAt": null,
     "closedAt": null,
     "outcome": {
-      "remediation": "Pending — technical review meeting convened",
-      "acknowledgement": "Verbal acknowledgement via telephone; technical meeting scheduled",
+      "remediation": "Pending",
+      "acknowledgement": "Verbal acknowledgement; technical meeting scheduled",
       "bounty": {
         "awarded": false,
         "amount": null
       }
     }
   },
-
   "classifications": {
     "reportType": "Web Application",
     "primaryCategory": "Authentication & Access Control",
@@ -46,116 +42,142 @@
       "password-reset-flaw",
       "token-reuse",
       "reflected-xss",
-      "unauthenticated-file-access",
       "kenya-dpa",
       "responsible-disclosure"
     ]
   },
-
-  "findings": {
-    "total": 6,
-    "severity": {
-      "critical": 1,
-      "high": 2,
-      "medium": 3,
-      "low": 0,
-      "informational": 0
+  "findings": [
+    {
+      "id": "F-001",
+      "title": "Account Takeover via Cross-Account Activation Code Reuse",
+      "category": "Authentication",
+      "severity": "Critical",
+      "status": "Confirmed",
+      "reportable": true,
+      "cwe": "CWE-639",
+      "cvss": 9.8
     },
-    "categories": {
-      "xss": 1,
-      "sqli": 0,
-      "idor": 1,
-      "ssrf": 0,
-      "auth": 1,
-      "csrf": 0,
-      "rce": 0,
-      "lfi": 0,
-      "infoDisclosure": 1,
-      "misconfiguration": 1,
-      "businessLogic": 1,
-      "other": 0
+    {
+      "id": "F-002",
+      "title": "Systemic IDOR Across Profile Management Endpoints",
+      "category": "IDOR",
+      "severity": "High",
+      "status": "Confirmed",
+      "reportable": true,
+      "cwe": "CWE-639",
+      "cvss": 8.1
+    },
+    {
+      "id": "F-003",
+      "title": "Unauthenticated Access to Uploaded CV Documents",
+      "category": "Information Disclosure",
+      "severity": "Medium",
+      "status": "Confirmed",
+      "reportable": true,
+      "cwe": "CWE-425",
+      "cvss": 5.3
+    },
+    {
+      "id": "F-004",
+      "title": "Reflected XSS with Session Cookie Exposure",
+      "category": "XSS",
+      "severity": "Medium",
+      "status": "Confirmed",
+      "reportable": true,
+      "cwe": "CWE-79",
+      "cvss": 6.1
+    },
+    {
+      "id": "F-005",
+      "title": "Activation Tokens Have No Expiry and Are Not Invalidated",
+      "category": "Authentication",
+      "severity": "Medium",
+      "status": "Confirmed",
+      "reportable": true,
+      "cwe": "CWE-613",
+      "cvss": 5.9
+    },
+    {
+      "id": "F-006",
+      "title": "National ID Uniqueness Enforced Client-Side Only",
+      "category": "Business Logic",
+      "severity": "Low",
+      "status": "Confirmed",
+      "reportable": true,
+      "cwe": "CWE-602",
+      "cvss": null
     }
-  },
-
+  ],
   "timeline": [
     {
       "phase": "Discovery",
       "date": "2026-06-01",
-      "summary": "Researcher discovers first anomaly (reflected XSS on error page) while applying for a job on the platform."
+      "summary": "Researcher discovers reflected XSS on error page while applying for a job."
     },
     {
       "phase": "Structured Assessment",
       "date": "2026-06-02",
-      "summary": "Assessment begins systematically — registration flow, activation codes, file upload, password reset mechanism, and profile endpoints all enumerated."
+      "summary": "Systematic assessment begins — registration, activation codes, file upload, password reset, profile endpoints."
     },
     {
       "phase": "Critical Finding Confirmed",
       "date": "2026-06-10",
-      "summary": "Cross-account activation code reuse on the password reset endpoint confirmed. Full account takeover demonstrated between two researcher-controlled accounts."
+      "summary": "Cross-account activation code reuse confirmed. Full account takeover demonstrated."
     },
     {
       "phase": "IDOR Chain Confirmed",
       "date": "2026-06-15",
-      "summary": "Systemic IDOR across all /parts/ profile endpoints confirmed. Eight affected endpoints mapped. PII enumeration chain validated end-to-end."
+      "summary": "Systemic IDOR across profile endpoints confirmed. Eight affected endpoints mapped."
     },
     {
       "phase": "Disclosure Sent",
       "date": "2026-06-20",
-      "summary": "Initial responsible disclosure email sent to Group General Manager ICT and Group Head of Enterprise Risk Management. No technical details included in initial contact."
+      "summary": "Responsible disclosure email sent. No technical details included."
     },
     {
       "phase": "Acknowledgement",
       "date": "2026-06-21",
-      "summary": "Verbal acknowledgement received via telephone from ICT team member. Gratitude expressed. Technical review meeting proposed."
+      "summary": "Verbal acknowledgement received. Technical review meeting proposed."
     },
     {
       "phase": "Technical Review Scheduled",
       "date": "2026-06-24",
-      "summary": "Virtual technical review meeting scheduled for the following week to present full findings and technical report."
+      "summary": "Virtual technical review meeting scheduled."
     }
   ],
-
   "businessImpact": {
     "confidentiality": {
       "level": "Critical",
-      "summary": "Every registered applicant's personal data is at risk of unauthorised access. Exposed data includes national ID numbers, dates of birth, phone numbers, home addresses, employment history, academic qualifications, professional memberships, referee contact details, and uploaded CV documents."
+      "summary": "Every registered applicant's personal data at risk — national ID numbers, contact details, employment history, qualifications, referee details, CV documents."
     },
     "integrity": {
       "level": "High",
-      "summary": "Any authenticated attacker can insert false qualifications, fabricated referee contacts, or falsified employment records into any other applicant's profile. Legitimate entries can be permanently deleted. The integrity of all recruitment data on the platform is compromised."
+      "summary": "Any authenticated attacker can insert false qualifications or delete legitimate entries from any applicant's profile."
     },
     "availability": {
       "level": "Low",
-      "summary": "No denial-of-service or availability impact was identified. The platform remained operational throughout the assessment."
+      "summary": "No denial-of-service impact identified."
     },
     "privacy": {
       "level": "Critical",
-      "summary": "The personal data exposed falls squarely within categories protected under the Kenya Data Protection Act 2019. National ID numbers, contact details, and identity documents were all accessible without authorisation."
+      "summary": "Protected data under Kenya Data Protection Act 2019 — national ID numbers, contact details, identity documents accessible without authorisation."
     },
     "regulatory": {
       "level": "High",
-      "summary": "KTDA, as a data controller, has obligations under sections 25 and 43 of the Kenya Data Protection Act 2019. The vulnerabilities represent a failure of the technical safeguards required under section 25. If prior exploitation is confirmed via log review, data subject notification obligations under section 43 may apply."
+      "summary": "Organisation has obligations under sections 25 and 43 of Kenya Data Protection Act 2019. Technical safeguards failure under section 25."
     },
     "operational": {
       "level": "Medium",
-      "summary": "The ability to falsify or delete applicant profile data undermines the integrity of the recruitment process. A malicious actor could manipulate a competitor's application without leaving a detectable trace."
+      "summary": "Ability to falsify or delete applicant data undermines recruitment process integrity."
     }
   },
-
   "risk": {
     "methodology": "ALE",
     "currency": "KES",
     "singleLossExpectancy": 3500000,
     "annualRateOfOccurrence": 0.45,
-    "residualAnnualRateOfOccurrence": 0.03,
-    "derived": {
-      "ALE_before": 1575000,
-      "ALE_after": 105000,
-      "riskReduction": 1470000,
-      "notes": "SLE based on: Kenya DPA section 72 maximum fine exposure (KES 5M), reputational remediation costs, and partial regulatory response costs. ARO of 0.45 reflects low exploitation barrier (one applicant account required, no special tooling) and absence of detection mechanisms. Residual ARO of 0.03 reflects expected post-remediation risk assuming ownership validation is correctly implemented."
-    }
+    "residualAnnualRateOfOccurrence": 0.03
   },
-
   "metrics": {
     "hoursInvested": 40,
     "endpointsReviewed": 24,
@@ -165,40 +187,36 @@
     "findingsConfirmed": 6,
     "retestsPerformed": 0
   },
-
   "lessons": [
     {
       "category": "Reconnaissance",
-      "summary": "Subdomain enumeration should be Phase 1 work. Two additional subdomains (surveys, management portal) were discovered late in the engagement. The surveys subdomain leaked an administrative email address that could have accelerated the attack chain characterisation."
+      "summary": "Subdomain enumeration should be Phase 1 work. Two additional subdomains discovered late in engagement."
     },
     {
       "category": "Methodology",
-      "summary": "When two data points are visible (e.g. sequential activation codes or account IDs), characterise the distribution immediately. The account ID gap (delta of 10) was observable in Phase 1 but not formally analysed until Phase 3."
+      "summary": "Characterise distribution immediately when sequential identifiers visible — account ID gap was observable but not analysed until Phase 3."
     },
     {
       "category": "Exploitation",
-      "summary": "Verify the outcome of authentication flow tests immediately and explicitly. The account takeover via password reset was live from Phase 1 but was not confirmed until session expiry revealed the password had changed. Always test login with both old and new credentials after any reset attempt."
+      "summary": "Verify authentication flow outcomes immediately. Account takeover was live from Phase 1 but not confirmed until session expiry revealed password change."
     },
     {
       "category": "Reporting",
-      "summary": "For organisations without a formal VDP, identifying a secondary escalation path during recon (LinkedIn, published contacts) is a practical strategy. The WhatsApp contact via a subsidiary contact proved effective when direct email channels were slow to be actioned."
+      "summary": "For organisations without VDP, identify secondary escalation path during recon. WhatsApp contact proved effective when email channels were slow."
     },
     {
       "category": "Scope",
-      "summary": "Shared hosting infrastructure requires explicit scope confirmation before any testing. Even when a target appears affiliated, verify before acting — shared hosting means third-party tenants may be affected by any active testing."
+      "summary": "Shared hosting requires explicit scope confirmation before testing — third-party tenants may be affected."
     }
   ],
-
   "related": {
     "research": [],
     "caseStudies": []
   },
-
-  "cover": "/case-studies/ktda-recruitment-platform-vdp/cover.png",
+  "cover": null,
   "readingTime": 14,
-
   "seo": {
-    "description": "A responsible disclosure case study uncovering critical account takeover and systemic IDOR vulnerabilities in a Kenyan agricultural body's recruitment platform, exposing applicant PII and authentication bypass risks.",
+    "description": "Responsible disclosure case study uncovering critical account takeover and systemic IDOR vulnerabilities in agricultural body recruitment platform, exposing applicant PII.",
     "keywords": [
       "responsible disclosure",
       "account takeover",
@@ -206,8 +224,7 @@
       "Kenya",
       "web application security",
       "PII exposure",
-      "password reset vulnerability",
-      "bug bounty Kenya"
+      "password reset vulnerability"
     ]
   }
 }
