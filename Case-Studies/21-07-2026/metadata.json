@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0",
+  "id": "vdp-ippms-2026",
+  "slug": "ippms-political-parties-management-system",
+  "title": "Silent Account Tampering and PII Exposure in a National Political Party Management System",
+  "summary": "A self-initiated responsible disclosure engagement against a national-level political party management platform, uncovering unauthenticated password tampering, sensitive-data IDOR exposure, and session-lifecycle weaknesses.",
+  "featured": false,
+  "visibility": "draft",
+  "organization": {
+    "name": null,
+    "public": false,
+    "alias": "National Political Party Registry Platform",
+    "website": null
+  },
+  "industry": "Government / Public Sector — Political Party Regulation",
+  "engagement": {
+    "type": "Responsible Disclosure",
+    "status": "Submitted",
+    "disclosureModel": "Coordinated",
+    "startedAt": "2026-07-21",
+    "submittedAt": "2026-07-22",
+    "acknowledgedAt": null,
+    "verifiedAt": null,
+    "closedAt": null,
+    "outcome": {
+      "remediation": "Pending",
+      "acknowledgement": "None",
+      "bounty": {
+        "awarded": false,
+        "amount": null
+      }
+    }
+  },
+  "classifications": {
+    "reportType": "Web Application Security Assessment",
+    "primaryCategory": "Broken Authentication / IDOR",
+    "tags": ["idor", "broken-authentication", "session-management", "pii-exposure", "govtech", "responsible-disclosure"]
+  },
+  "findings": {
+    "total": 6,
+    "severity": {
+      "critical": 0,
+      "high": 2,
+      "medium": 3,
+      "low": 1,
+      "informational": 0
+    },
+    "categories": {
+      "xss": 0,
+      "sqli": 0,
+      "idor": 3,
+      "ssrf": 0,
+      "auth": 1,
+      "csrf": 0,
+      "rce": 0,
+      "lfi": 0,
+      "infoDisclosure": 1,
+      "misconfiguration": 0,
+      "businessLogic": 1,
+      "other": 0
+    }
+  },
+  "timeline": [
+    { "phase": "Discovery", "date": "2026-07-15", "summary": "Vulnerability discovered incidentally during normal use of the platform's registration flow." },
+    { "phase": "Recon", "date": "2026-07-16", "summary": "Authentication, session, and membership-management flows reviewed using researcher-owned test accounts." },
+    { "phase": "Analysis", "date": "2026-07-22", "summary": "Findings triaged, severities assigned, secondary infrastructure observations scoped out of the core report." },
+    { "phase": "Reporting", "date": "2026-07-25", "summary": "Technical report and executive summary submitted to the platform operator." }
+  ],
+  "businessImpact": {
+    "confidentiality": { "level": "High", "summary": "Sensitive personal data, including special-category fields, exposed to unauthenticated requests." },
+    "integrity": { "level": "Medium", "summary": "Account credentials and party-membership records could be modified without owner consent." },
+    "availability": { "level": "Low", "summary": "No availability impact identified or tested." },
+    "privacy": { "level": "High", "summary": "Ethnicity, religion, and contact data exposed via identifier-based lookups." },
+    "regulatory": { "level": "Medium", "summary": "Exposure of special-category personal data raises data protection compliance considerations." },
+    "operational": { "level": "Medium", "summary": "Silent credential tampering could erode user trust in platform account security if exploited at scale." }
+  },
+  "risk": {
+    "methodology": "ALE",
+    "currency": "KES",
+    "singleLossExpectancy": null,
+    "annualRateOfOccurrence": null,
+    "residualAnnualRateOfOccurrence": null
+  },
+  "metrics": {
+    "hoursInvested": null,
+    "endpointsReviewed": 14,
+    "requestsCaptured": null,
+    "attackChainsValidated": 1,
+    "findingsReported": 6,
+    "findingsConfirmed": 6,
+    "retestsPerformed": 0
+  },
+  "lessons": [
+    { "category": "Process", "summary": "Discovery-by-accident during ordinary product use is a legitimate and common entry point into responsible disclosure work — worth designing an intake process around rather than treating as an edge case." },
+    { "category": "Scoping", "summary": "Infrastructure-level recon findings (network devices, exposed management interfaces) warrant separate, more conservative handling than application-layer findings, and should not appear in public-facing material regardless of remediation status." },
+    { "category": "Communication", "summary": "Coordinated disclosure with a defined escalation timeline (acknowledgment, follow-up, neutral third-party escalation) produces a clearer record than open-ended waiting." }
+  ],
+  "related": {
+    "research": [],
+    "caseStudies": []
+  },
+  "cover": null,
+  "readingTime": null,
+  "seo": {
+    "description": "Case study on a coordinated responsible disclosure engagement against a national political party management platform, covering unauthenticated credential tampering, sensitive PII exposure via IDOR, and session-lifecycle findings.",
+    "keywords": ["responsible disclosure", "IDOR", "broken authentication", "govtech security", "Kenya", "vulnerability disclosure program"]
+  }
+}

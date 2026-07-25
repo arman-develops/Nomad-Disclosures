@@ -25,14 +25,14 @@
     "disclosureModel": "Coordinated",
 
     "startedAt": "2026-05-01",
-    "submittedAt": "2026-06-15",
-    "acknowledgedAt": null,
-    "verifiedAt": null,
-    "closedAt": null,
+    "submittedAt": "2026-06-02",
+    "acknowledgedAt": "2026-06-03",
+    "verifiedAt": "2026-06-03",
+    "closedAt": "2026-06-02",
 
     "outcome": {
-      "remediation": "Pending",
-      "acknowledgement": "Pending",
+      "remediation": "Verified",
+      "acknowledgement": "Duplicate",
       "bounty": {
         "awarded": false,
         "amount": null

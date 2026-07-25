@@ -18,12 +18,12 @@
     "status": "Closed",
     "disclosureModel": "Coordinated",
     "startedAt": "2026-02-13",
-    "submittedAt": "2026-02-13",
+    "submittedAt": "2026-02-14",
     "acknowledgedAt": "2026-02-18",
-    "verifiedAt": null,
+    "verifiedAt": "2026-02-18",
     "closedAt": "2026-02-18",
     "outcome": {
-      "remediation": "Not Verified",
+      "remediation": "Verified",
       "acknowledgement": "Duplicate",
       "bounty": {
         "awarded": false,
