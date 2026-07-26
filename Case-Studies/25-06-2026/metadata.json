@@ -4,7 +4,7 @@
   "slug": "agricultural-recruitment-platform-account-takeover",
   "title": "Account Takeover and Systemic IDOR in National Agricultural Body Recruitment Platform",
   "summary": "Self-initiated responsible disclosure uncovering critical authentication bypass enabling full account takeover, alongside systemic broken access control exposing applicant PII across multiple endpoints. Findings acknowledged within 72 hours.",
-  "featured": false,
+  "featured": true,
   "visibility": "public",
   "organization": {
     "name": null,

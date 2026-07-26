@@ -4,7 +4,7 @@
   "slug": "sql-injection-account-takeover-ecommerce-platform",
   "title": "SQL Injection and Account Takeover on E-Commerce Platform",
   "summary": "A self-initiated responsible disclosure engagement uncovering unauthenticated account takeover (including admin accounts), two independent SQL injection vulnerabilities, and exposure of live third-party credentials across two separate customer databases.",
-  "featured": false,
+  "featured": true,
   "visibility": "public",
   "organization": {
     "name": null,

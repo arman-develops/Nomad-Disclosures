@@ -5,7 +5,7 @@
   "slug": "ecommerce-microservices-cors-assessment-2026",
   "title": "E-Commerce Microservices Architecture Security Assessment",
   "summary": "Authorized security assessment of an e-commerce platform's bug bounty program focusing on authentication services, API gateways and supporting microservices. Identified confirmed High severity CORS misconfiguration alongside multiple defense-in-depth weaknesses.",
-  "featured": false,
+  "featured": true,
   "visibility": "public",
   "organization": {
     "name": null,
