@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "1.0",
+  "id": "case-consumer-health-media-subscribe-idor-2026",
+  "slug": "consumer-health-media-guid-disclosure-idor",
+  "title": "The Identifier That Wasn't a Secret: An Unauthenticated Account-Enumeration and Access-Control Chain",
+  "summary": "A public-facing subscription feature on a large consumer health media platform disclosed an internal account identifier that other parts of the platform trusted as proof of identity. Chained together, this allowed an unauthenticated party to enumerate accounts by email and modify account state without a session. Reproduced and confirmed by the program's triage team; closed as an accepted business risk with no remediation observed.",
+  "featured": false,
+  "visibility": "public",
+  "organization": {
+    "name": "Consumer Health Media Platform",
+    "public": false,
+    "alias": "A large, publicly-traded consumer health media platform",
+    "disclosedWithPermission": false,
+    "website": null
+  },
+  "industry": "Healthcare / Consumer Health Media",
+  "engagement": {
+    "type": "Bug Bounty",
+    "status": "Closed",
+    "disclosureModel": "Managed Program (Public Platform)",
+    "startedAt": "2026-07-28",
+    "submittedAt": "2026-08-01",
+    "acknowledgedAt": "2026-08-06",
+    "verifiedAt": "2026-08-06",
+    "closedAt": "2026-08-06",
+    "outcome": {
+      "remediation": "None observed",
+      "acknowledgement": "Reproduced and verified by triage; classified as a business-accepted risk",
+      "bounty": {
+        "awarded": false,
+        "amount": null
+      }
+    }
+  },
+  "classifications": {
+    "reportType": "Bug Bounty Submission",
+    "primaryCategory": "Broken Access Control",
+    "tags": [
+      "idor",
+      "broken-access-control",
+      "authentication",
+      "account-enumeration",
+      "bug-bounty",
+      "guid-authorization"
+    ]
+  },
+  "findings": {
+    "total": 1,
+    "severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "informational": 0
+    },
+    "categories": {
+      "xss": 0,
+      "sqli": 0,
+      "idor": 1,
+      "ssrf": 0,
+      "auth": 1,
+      "csrf": 0,
+      "rce": 0,
+      "lfi": 0,
+      "infoDisclosure": 1,
+      "misconfiguration": 0,
+      "businessLogic": 0,
+      "other": 0
+    }
+  },
+  "timeline": [
+    {
+      "phase": "Surface Mapping & Feature Analysis",
+      "date": "2026-07-28",
+      "summary": "Mapped the platform's identity and subscription-related flows and noted a mix of an older authentication approach alongside a newer, better-guarded one."
+    },
+    {
+      "phase": "Chain Building",
+      "date": null,
+      "summary": "Identified that an internal account identifier, normally only available to an already-authenticated session, was returned unauthenticated by an unrelated public-facing feature in response to a submitted email address."
+    },
+    {
+      "phase": "Verification & Escalation",
+      "date": null,
+      "summary": "Confirmed the disclosed identifier could be used, without any session, to modify a victim's account-related preferences and read limited account activity. Confirmed a secondary signal allowing non-brute-force account enumeration."
+    },
+    {
+      "phase": "Report Preparation & Submission",
+      "date": "2026-08-01",
+      "summary": "Consolidated several individually low-severity access-control observations into a single root-cause report and submitted it under Broken Access Control / IDOR."
+    },
+    {
+      "phase": "Triage & Resolution",
+      "date": "2026-08-06",
+      "summary": "The program's triage team reproduced and verified the chain, then closed it as Not Applicable: a business-accepted risk. No remediation or bounty followed."
+    }
+  ],
+  "businessImpact": {
+    "confidentiality": {
+      "level": "Medium",
+      "summary": "Any registered user's account existence and limited account activity could be disclosed to an unauthenticated party who knew only their email address."
+    },
+    "integrity": {
+      "level": "Medium",
+      "summary": "An attacker could alter certain account-related preferences without the victim's knowledge or consent."
+    },
+    "availability": {
+      "level": "Low",
+      "summary": "No account lockout or service disruption resulted from this chain."
+    },
+    "privacy": {
+      "level": "Medium",
+      "summary": "Enabled non-brute-force account enumeration at scale and disclosed an internal identifier intended to function as a session-bound secret."
+    },
+    "regulatory": {
+      "level": "Low",
+      "summary": "No health data or protected health information was exposed by this chain."
+    },
+    "operational": {
+      "level": "Low",
+      "summary": "No direct financial loss; the underlying pattern of trusting a disclosable identifier as authorization appeared to recur elsewhere on the same platform."
+    }
+  },
+  "risk": {
+    "methodology": "Qualitative (Program VRT)",
+    "currency": null,
+    "singleLossExpectancy": null,
+    "annualRateOfOccurrence": null,
+    "residualAnnualRateOfOccurrence": null
+  },
+  "metrics": {
+    "hoursInvested": null,
+    "endpointsReviewed": null,
+    "requestsCaptured": null,
+    "attackChainsValidated": 1,
+    "findingsReported": 1,
+    "findingsConfirmed": 1,
+    "retestsPerformed": 2
+  },
+  "lessons": [
+    {
+      "category": "Methodology",
+      "summary": "A structured recon-to-chain approach turned several individually low-value observations into one coherent, harder-to-dismiss root-cause report."
+    },
+    {
+      "category": "Root Cause vs. Symptom",
+      "summary": "The real defect was never any single downstream feature — it was that an internal identifier meant to function as a secret was disclosable without authentication."
+    },
+    {
+      "category": "Verification Discipline",
+      "summary": "An inconsistent retest across entangled test accounts nearly undermined confidence in the finding; isolating the variable with fresh, unrelated accounts confirmed it was reliably reproducible."
+    },
+    {
+      "category": "Program Reality",
+      "summary": "A fully reproduced and verified finding can still close as a business-accepted risk with no bounty — technical validity and program payout decisions are separate outcomes."
+    },
+    {
+      "category": "Pattern Recognition",
+      "summary": "Older, legacy parts of a platform's authentication model consistently carry weaker access control than newer, actively maintained parts — worth checking first on any long-running program."
+    }
+  ],
+  "related": {
+    "research": [],
+    "caseStudies": []
+  },
+  "cover": null,
+  "readingTime": "5 min",
+  "seo": {
+    "description": "Case study: how a disclosable internal identifier on a large consumer platform enabled account enumeration and unauthorized account-state changes.",
+    "keywords": [
+      "idor case study",
+      "broken access control",
+      "account enumeration",
+      "bug bounty not applicable",
+      "access control research"
+    ]
+  }
+}

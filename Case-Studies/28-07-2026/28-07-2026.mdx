@@ -1,0 +1,51 @@
+# The Identifier That Wasn't a Secret
+
+**An unauthenticated account-enumeration and access-control chain on a consumer health media platform**
+
+## Summary
+
+This engagement was carried out against a large, publicly-traded consumer health media platform through its managed public bug bounty program. As part of our disclosure work, we do not identify programs where public disclosure wasn't part of the engagement terms, and we don't publish exploit-level detail — endpoint names, request formats, cookies, or anything that would function as a working proof of concept for someone else. What follows is the shape of the finding, not the recipe for it.
+
+The short version: a public-facing feature meant only to let a visitor sign up for a newsletter also returned an internal account identifier — the same kind of identifier the platform used elsewhere as proof that a request came from a legitimate, logged-in session. Getting that identifier required nothing but knowing someone's email address. Once obtained, it was usable to alter parts of that person's account without their knowledge, and a secondary detail in the same response let an attacker quietly confirm whether any given email even belonged to a registered account.
+
+The program's own triage team reproduced the issue and confirmed it worked as reported. It was still closed without a fix, as a risk the business chose to accept. No bounty was issued.
+
+## Background
+
+The platform runs a modern, actively maintained authentication model for most of its sensitive functionality — the kind of access control you'd expect from a program that's been live and tested for a couple of years. Alongside it, though, sat an older layer of functionality that had clearly been carried forward from an earlier version of the system, still reachable, and authorizing requests in a fundamentally different — and weaker — way.
+
+## What We Found
+
+The older layer trusted a single internal identifier as sufficient proof of who was making a request. Under normal use, that identifier only exists inside an authenticated session — a visitor never sees it unless they've logged in.
+
+A completely separate, public, unauthenticated feature — one built for something as ordinary as subscribing to a newsletter — returned that same identifier as a side effect of processing an email address. It didn't need to. It just did.
+
+From there, the chain was straightforward in hindsight: obtain the identifier using only a target's email address, then hand that identifier to the older functionality that had never questioned where it came from. No password. No session. No interaction from the person being targeted.
+
+A second, smaller detail compounded it — the response also revealed, cleanly, whether the submitted email belonged to an existing account, giving an unauthenticated way to enumerate real users at scale.
+
+## Why This Was Easy to Miss
+
+Tested in isolation, each individual behavior looks minor — an access-control gap gated by a value an attacker would supposedly already need to have. That framing only holds if the value is actually hard to get. The moment we asked where that identifier came from, the chain stopped being a curiosity and became a real, unauthenticated path from "I know your email" to "I can act on your account."
+
+## Verification, and a Moment of Doubt
+
+Late in testing, a retest across a set of accounts we'd used earlier in the engagement produced inconsistent results — some worked, some didn't. For a short time it looked like the entire finding might have been an artifact of messy test data rather than a real issue. Isolating the variable settled it: the accounts that failed had overlapping history from earlier tests, while fresh, unrelated accounts reproduced the chain cleanly every time. It was a lesson in not discarding a result on a flaky retest, and not trusting one blindly either — isolate first.
+
+## Outcome
+
+The report was submitted as a single, consolidated finding rather than several small ones, framed around the actual root cause rather than each symptom of it. The program's triage team reproduced and verified it in full. It was then closed as Not Applicable — a risk the business decided to accept, with no fix and no bounty.
+
+That's worth sitting with honestly. A verified, reproducible issue isn't the same thing as one a company is obligated to remediate. Some risks get accepted for reasons that live entirely on the business side and aren't always visible to the person who found the bug. The technical validity of a finding and a program's decision about what to do with it are two separate things, and it's a mistake to read either one as a verdict on the other.
+
+## Lessons
+
+- **Chain small findings before reporting them separately.** The same underlying observations, reported piecemeal, would likely have been dismissed as informational or duplicate. Framed around one root cause, they became a single report worth a triager's full attention.
+- **Fix the root cause in your own thinking, not the symptom.** The real defect was never any one downstream feature — it was that a value meant to function as a secret wasn't actually secret.
+- **A flaky retest deserves isolation, not panic — and not blind trust either.**
+- **Verified and rewarded are not the same outcome.** This finding was real and confirmed, and still closed without action. That's a legitimate program outcome, not a failure of the research.
+- **Legacy functionality is where the gaps live.** Across this engagement, the pattern held consistently: older, carried-forward parts of the system had weaker access control than the parts actively being maintained. Worth checking first on any long-running target.
+
+---
+
+*This case study describes an authorized security research engagement conducted through a managed public bug bounty program. The target is not named because public disclosure was not part of this engagement's terms. Technical detail has been intentionally omitted; nothing here constitutes a usable proof of concept.*
