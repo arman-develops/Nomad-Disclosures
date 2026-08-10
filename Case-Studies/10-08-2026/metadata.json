@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "1.0",
+  "id": "case-mpesa-agent-impersonation-2026",
+  "slug": "mpesa-agent-impersonation-fraud",
+  "title": "Fake Till Registration: A Real-World M-Pesa Account Takeover via Agent Impersonation",
+  "summary": "A door-to-door 'Safaricom agent' social-engineered a small business owner into surrendering her M-Pesa PIN under the pretext of till registration, then used it to log her account into his own phone and drain funds via loans, Fuliza, and P2P transfers over several hours.",
+  "featured": false,
+  "visibility": "public",
+  "organization": {
+    "name": "Anonymized small retail business",
+    "public": false,
+    "alias": "Neighborhood kiosk owner",
+    "disclosedWithPermission": false,
+    "website": null
+  },
+  "industry": "Retail / Small Business (informal sector)",
+  "engagement": {
+    "type": "Research",
+    "status": "Archived",
+    "disclosureModel": "Private",
+    "startedAt": null,
+    "submittedAt": null,
+    "acknowledgedAt": null,
+    "verifiedAt": null,
+    "closedAt": null,
+    "outcome": {
+      "remediation": "None",
+      "acknowledgement": "None",
+      "bounty": {
+        "awarded": false,
+        "amount": null
+      }
+    }
+  },
+  "classifications": {
+    "reportType": "Incident Case Study",
+    "primaryCategory": "Social Engineering",
+    "tags": [
+      "social-engineering",
+      "pretexting",
+      "mobile-money-fraud",
+      "mpesa",
+      "account-takeover",
+      "kenya",
+      "informal-sector",
+      "incident-response"
+    ]
+  },
+  "findings": {
+    "total": 1,
+    "severity": {
+      "critical": 1,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "informational": 0
+    },
+    "categories": {
+      "xss": 0,
+      "sqli": 0,
+      "idor": 0,
+      "ssrf": 0,
+      "auth": 1,
+      "csrf": 0,
+      "rce": 0,
+      "lfi": 0,
+      "infoDisclosure": 0,
+      "misconfiguration": 0,
+      "businessLogic": 1,
+      "other": 0
+    }
+  },
+  "timeline": [
+    {
+      "phase": "Pretext / Initial Contact",
+      "date": null,
+      "summary": "A man posing as a Safaricom agent, equipped with agent-branded shirt and SIM/registration hardware, approached the business owner offering to 'register a till number' for her — despite her already using Pochi la Biashara. She had no clear reason for suddenly wanting a till."
+    },
+    {
+      "phase": "Credential Elicitation",
+      "date": null,
+      "summary": "The 'agent' asked for her M-Pesa PIN, framing it as required for the registration process. An Okoa Jahazi-style loan message (1024MB data bundle) and an OTP message from an M-Pesa till appeared during this window — both missed as red flags in the moment."
+    },
+    {
+      "phase": "Session Hijack Setup",
+      "date": null,
+      "summary": "The attacker left claiming the process 'failed' and he'd return the next day. In reality, he used the harvested PIN and phone number to log the Safaricom One / M-Pesa app into his own device, establishing a persistent authenticated session."
+    },
+    {
+      "phase": "Active Fraud / Discovery",
+      "date": "00:39",
+      "summary": "Rapid-fire transaction messages began: an M-Shwari loan request, ~24,000 KES approval, withdrawal of the same amount to M-Pesa, and a transfer to a third-party recipient. Total losses reached approximately 28,000 KES across earnings, M-Shwari loan proceeds, and Fuliza-initiated loans."
+    },
+    {
+      "phase": "First Containment Attempt",
+      "date": null,
+      "summary": "The victim's M-Pesa PIN was changed. Multiple failed PIN attempts from the attacker's session followed, then the account locked — cutting off his access."
+    },
+    {
+      "phase": "Re-exposure",
+      "date": null,
+      "summary": "The account was unlocked to check status; within minutes the attacker resumed activity, confirming the lock — not a session termination — was the only effective control in place."
+    },
+    {
+      "phase": "Defensive Counter-Transaction",
+      "date": null,
+      "summary": "As the attacker initiated another loan-to-M-Pesa transfer (~15,000 KES) intended for onward transfer to himself, responders intercepted it by redirecting the funds to a phone they controlled before he could complete the withdrawal. The account was then deliberately re-locked."
+    },
+    {
+      "phase": "Pattern Confirmation",
+      "date": "Following morning",
+      "summary": "At Safaricom customer care, the victim learned a nearby shop owner had been hit by the same individual using the same pretext — indicating a repeated, opportunistic campaign targeting small business owners unfamiliar with the Safaricom One app."
+    },
+    {
+      "phase": "Post-Incident / Reporting Friction",
+      "date": null,
+      "summary": "Safaricom invalidated the attacker's session. Recovering transaction/mule data required an Occurrence Book report from police first, then a permit request to Safaricom before any investigation could begin — a slow process reportedly compounded by informal bribe expectations at the police stage. The victim changed her business transaction number out of continued fear of targeting."
+    }
+  ],
+  "businessImpact": {
+    "confidentiality": {
+      "level": "High",
+      "summary": "M-Pesa PIN and full account session access were surrendered directly to the attacker, who authenticated as the victim on his own device."
+    },
+    "integrity": {
+      "level": "High",
+      "summary": "Unauthorized loan applications (M-Shwari, Fuliza), withdrawals, and third-party transfers were executed under the victim's identity without her initiation or knowledge until messages arrived."
+    },
+    "availability": {
+      "level": "Medium",
+      "summary": "The victim's own account access was disrupted by the defensive PIN lock/unlock cycle used to fight off the attacker, and she later abandoned her business number entirely."
+    },
+    "privacy": {
+      "level": "Medium",
+      "summary": "Personal financial identifiers (phone number, transaction history, PIN) were exposed to an unknown third party who is likely still in possession of some of that data."
+    },
+    "regulatory": {
+      "level": "Low",
+      "summary": "No formal regulatory reporting occurred beyond a police Occurrence Book and a Safaricom customer care report; no evidence of CBK or DCI-level escalation."
+    },
+    "operational": {
+      "level": "High",
+      "summary": "Direct financial loss of roughly 28,000 KES (partially offset by a ~15,000 KES intercepted counter-transfer), plus the ongoing operational cost of switching business transaction numbers and lost customer trust continuity."
+    }
+  },
+  "risk": {
+    "methodology": "ALE",
+    "currency": "KES",
+    "singleLossExpectancy": 28000,
+    "annualRateOfOccurrence": null,
+    "residualAnnualRateOfOccurrence": null
+  },
+  "metrics": {
+    "hoursInvested": null,
+    "endpointsReviewed": null,
+    "requestsCaptured": null,
+    "attackChainsValidated": 1,
+    "findingsReported": 0,
+    "findingsConfirmed": null,
+    "retestsPerformed": 0
+  },
+  "lessons": [
+    {
+      "category": "Human Factors",
+      "summary": "Trusted-role impersonation (agent shirts, real vending hardware) bypasses technical controls entirely; the PIN was handed over willingly to what looked like a legitimate Safaricom representative."
+    },
+    {
+      "category": "Credential Hygiene",
+      "summary": "No legitimate till/Pochi registration process requires disclosing an M-Pesa PIN to a third party — this single red flag, if recognized in the moment, would have prevented the entire chain."
+    },
+    {
+      "category": "Incident Response",
+      "summary": "Locking the PIN was the only control that reliably cut off attacker access; unlocking it — even briefly to assess status — immediately restored his session and let the fraud continue."
+    },
+    {
+      "category": "Response Under Pressure",
+      "summary": "Redirecting an in-flight attacker-initiated loan transfer to a controlled phone number in real time recovered a meaningful portion of the loss, but required fast, calm, technically literate responders on-site — a resource most victims won't have."
+    },
+    {
+      "category": "Institutional Friction",
+      "summary": "The OB-report-then-permit-then-trace chain, plus informal bribe expectations, meaningfully discourages victims from pursuing recovery even when the telco has the technical means to trace fund flow to mule accounts."
+    },
+    {
+      "category": "Community Pattern",
+      "summary": "The same attacker had already hit at least one other nearby business using an identical pretext, suggesting these are repeatable, low-cost campaigns worth flagging to local business networks as soon as they're spotted."
+    }
+  ],
+  "related": {
+    "research": [],
+    "caseStudies": []
+  },
+  "cover": null,
+  "readingTime": "6 min",
+  "seo": {
+    "description": "How a fake Safaricom agent social-engineered a small business owner's M-Pesa PIN and drained her account through rapid loan-and-transfer fraud — and what stopped him.",
+    "keywords": [
+      "mpesa fraud",
+      "social engineering kenya",
+      "mobile money account takeover",
+      "safaricom agent impersonation",
+      "pochi la biashara scam",
+      "sim jacking vs pretexting"
+    ]
+  }
+}
