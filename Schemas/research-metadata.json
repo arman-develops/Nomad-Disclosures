@@ -1,0 +1,483 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomad-research.example/schemas/research-metadata-1.0.json",
+  "title": "Nomad Research Metadata",
+  "description": "Metadata schema for publicly published Nomad research documents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "slug",
+    "title",
+    "summary",
+    "featured",
+    "visibility",
+    "research",
+    "classifications",
+    "timeline",
+    "impact",
+    "findings",
+    "methodology",
+    "references",
+    "cover",
+    "readingTime",
+    "seo"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+
+    "id": {
+      "type": "string",
+      "pattern": "^research-[a-z0-9-]+$"
+    },
+
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "unlisted",
+        "draft"
+      ],
+      "default": "public"
+    },
+
+    "research": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "status",
+        "startedAt",
+        "publishedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Independent Research",
+            "Security Research",
+            "Threat Research",
+            "Incident Research",
+            "Vulnerability Research",
+            "Scam Research",
+            "Investigation",
+            "Technical Analysis"
+          ]
+        },
+
+        "status": {
+          "type": "string",
+          "enum": [
+            "Draft",
+            "Researching",
+            "Validated",
+            "Published",
+            "Updated",
+            "Archived"
+          ]
+        },
+
+        "startedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+
+        "publishedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+
+        "updatedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+
+        "author": {
+          "type": "string",
+          "default": "Nomad"
+        }
+      }
+    },
+
+    "classifications": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "tags"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "Cybercrime",
+            "Scams",
+            "Fraud",
+            "Application Security",
+            "Web Security",
+            "API Security",
+            "Identity & Access",
+            "Threat Intelligence",
+            "Privacy",
+            "OSINT",
+            "Incident Analysis",
+            "Vulnerability Research",
+            "Other"
+          ]
+        },
+
+        "subcategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "event",
+          "summary"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+
+          "event": {
+            "type": "string"
+          },
+
+          "summary": {
+            "type": "string"
+          }
+        }
+      }
+    },
+
+    "impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "technical",
+        "business",
+        "individual",
+        "public"
+      ],
+      "properties": {
+        "technical": {
+          "type": "string"
+        },
+
+        "business": {
+          "type": "string"
+        },
+
+        "individual": {
+          "type": "string"
+        },
+
+        "public": {
+          "type": "string"
+        }
+      }
+    },
+
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "summary",
+          "severity"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+
+          "summary": {
+            "type": "string"
+          },
+
+          "severity": {
+            "type": "string",
+            "enum": [
+              "Critical",
+              "High",
+              "Medium",
+              "Low",
+              "Informational"
+            ]
+          },
+
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+
+    "methodology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approach"
+      ],
+      "properties": {
+        "approach": {
+          "type": "string"
+        },
+
+        "techniques": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "Public Research",
+            "Coordinated",
+            "Private",
+            "Not Applicable"
+          ]
+        },
+
+        "organizationContacted": {
+          "type": "boolean"
+        },
+
+        "contactedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+
+        "response": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "disclosureNotes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+
+    "entities": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "organizations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "public"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+
+              "public": {
+                "type": "boolean"
+              },
+
+              "alias": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "countries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "url",
+          "type"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+
+          "type": {
+            "type": "string",
+            "enum": [
+              "Primary Source",
+              "Official Source",
+              "News",
+              "Research",
+              "Technical Documentation",
+              "Other"
+            ]
+          }
+        }
+      }
+    },
+
+    "related": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "research": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "caseStudies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+
+    "cover": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+
+    "readingTime": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+
+    "seo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "keywords"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

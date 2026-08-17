@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "1.0",
+  "id": "research-shared-infrastructure-kenya-job-scam-network",
+  "slug": "shared-infrastructure-kenya-job-scam-network",
+  "title": "One Backend, Ten Scams: Inside a Shared Infrastructure Fraud Network Targeting Kenyan Job Seekers",
+  "summary": "A single unsecured backend was found powering at least ten simultaneous scam campaigns impersonating well-known Kenyan and multinational companies, exposing thousands of victims' personal data and an active fee-based fraud scheme collecting real M-Pesa payments.",
+  "featured": true,
+  "visibility": "public",
+  "research": {
+    "type": "Scam Research",
+    "status": "Published",
+    "startedAt": "2026-07-02",
+    "publishedAt": "2026-07-04",
+    "updatedAt": "2026-07-04",
+    "author": "Nomad"
+  },
+  "classifications": {
+    "category": "Fraud",
+    "subcategory": "Job Scam / Shared Fraud Infrastructure",
+    "tags": [
+      "job scam",
+      "phishing",
+      "Kenya",
+      "M-Pesa fraud",
+      "PII exposure",
+      "unauthenticated API",
+      "brand impersonation",
+      "advance-fee fraud"
+    ]
+  },
+  "timeline": [
+    {
+      "date": "2026-07-02",
+      "event": "Initial exposure",
+      "summary": "A phishing email impersonating a real employer's recruitment process was received and reviewed."
+    },
+    {
+      "date": "2026-07-02",
+      "event": "Backend identified",
+      "summary": "Review of the linked page's client-side code revealed an unauthenticated backend API."
+    },
+    {
+      "date": "2026-07-03",
+      "event": "Fee mechanism confirmed",
+      "summary": "A fee-based fake certification scheme was confirmed, along with exposed applicant personal data."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "Full scope identified",
+      "summary": "A single query revealed the backend served at least ten concurrent scam campaigns, plus live third-party service credentials."
+    },
+    {
+      "date": "2026-07-04",
+      "event": "Reports filed",
+      "summary": "Findings reported to affected service providers, the mobile money operator's fraud desk, and national cybercrime authorities."
+    }
+  ],
+  "impact": {
+    "technical": "A backend data store with no authentication on any endpoint, including a root-level export, allowed unrestricted reading and writing of the full underlying dataset for every campaign it served.",
+    "business": "At least six real companies had their names, logos, and recruitment processes impersonated without their knowledge, creating brand and trust exposure they did not create and could not control.",
+    "individual": "Thousands of job seekers had personal data exposed, including national ID numbers, phone numbers, and plaintext passwords; a subset were charged real money for a certification product that does not functionally exist.",
+    "public": "The pattern demonstrates how a single piece of reused infrastructure can scale one scam template across many brands simultaneously, suggesting the underlying tooling may already be reused elsewhere or resurface again."
+  },
+  "findings": [
+    {
+      "title": "Complete absence of authentication on the shared backend",
+      "summary": "Every data endpoint, including a root-level export, was reachable without any credential or token.",
+      "severity": "Critical",
+      "category": "Access Control"
+    },
+    {
+      "title": "Fee-based fraud scheme confirmed non-functional at its core",
+      "summary": "The paid 'certification' at the center of the largest campaign could not be verified by its own stated verification system.",
+      "severity": "High",
+      "category": "Fraud Mechanism"
+    },
+    {
+      "title": "Single infrastructure serving at least ten concurrent scam campaigns",
+      "summary": "One backend and data model powered impersonations of at least six distinct real companies plus several unbranded schemes.",
+      "severity": "High",
+      "category": "Infrastructure"
+    },
+    {
+      "title": "Large-scale plaintext exposure of victim personal data",
+      "summary": "Names, national IDs, phone numbers, and plaintext passwords for thousands of individuals were readable without authentication.",
+      "severity": "Critical",
+      "category": "Data Exposure"
+    },
+    {
+      "title": "Live third-party service credentials found within the exposed dataset",
+      "summary": "Valid payment gateway and email service credentials were present in the same unsecured data store as victim records.",
+      "severity": "High",
+      "category": "Credential Exposure"
+    }
+  ],
+  "methodology": {
+    "approach": "This research began as passive, incidental exposure to a phishing campaign rather than a deliberate search for a target. Once an unsecured backend was identified, all further investigation was limited to passively observing data the server returned to ordinary, unmodified requests. No credentials were guessed, no access controls were bypassed, and no destructive or invasive testing was performed at any stage.",
+    "techniques": [
+      "Client-side code review of a phishing landing page",
+      "Passive observation of unauthenticated API responses",
+      "Timeline reconstruction from exposed timestamped records",
+      "Cross-referencing of recurring identifiers across data sets"
+    ],
+    "limitations": [
+      "No access to the operator's infrastructure beyond what the exposed backend voluntarily returned",
+      "No ability to confirm total historical scope prior to the observation window",
+      "Any actor-identifying patterns observed are investigative leads only and are not independently corroborated"
+    ]
+  },
+  "disclosure": {
+    "model": "Coordinated",
+    "organizationContacted": true,
+    "contactedAt": "2026-07-04",
+    "response": "Pending at time of publication",
+    "disclosureNotes": "The underlying infrastructure was not operated by a legitimate organization with a disclosure program; it was reported instead to the affected third-party service providers (for credential revocation), the relevant mobile money operator's fraud desk, and national cybercrime authorities. The real companies impersonated by the campaigns were also notified so they could warn their own applicant communities."
+  },
+  "entities": {
+    "organizations": [
+      { "name": "Rubis Energy Kenya", "public": true, "alias": null },
+      { "name": "Chandarana Foodplus", "public": true, "alias": null },
+      { "name": "Eastmatt Supermarket", "public": true, "alias": null },
+      { "name": "Carrefour Kenya", "public": true, "alias": null },
+      { "name": "Freshfri", "public": true, "alias": null },
+      { "name": "Magunas", "public": true, "alias": null }
+    ],
+    "products": [
+      "M-Pesa",
+      "Safaricom Daraja API",
+      "Lipwa Payment Gateway",
+      "EmailJS"
+    ],
+    "countries": [
+      "Kenya"
+    ]
+  },
+  "references": [
+    {
+      "title": "Kenya Data Protection Act, 2019 — Office of the Data Protection Commissioner",
+      "url": "https://www.odpc.go.ke/",
+      "type": "Official Source"
+    },
+    {
+      "title": "Safaricom Fraud Reporting",
+      "url": "https://www.safaricom.co.ke/fraud-alert",
+      "type": "Official Source"
+    },
+    {
+      "title": "Directorate of Criminal Investigations (Kenya) — Cybercrime Unit",
+      "url": "https://cid.go.ke/",
+      "type": "Official Source"
+    }
+  ],
+  "related": {
+    "research": [],
+    "caseStudies": []
+  },
+  "cover": "/research/04-07-2026/cover.png",
+  "readingTime": 13,
+  "seo": {
+    "description": "Nomad research into a single unsecured backend powering at least ten simultaneous job-scam and fraud campaigns impersonating real Kenyan companies, exposing thousands of victims' data and an active M-Pesa payment fraud scheme.",
+    "keywords": [
+      "Kenya job scam",
+      "M-Pesa fraud",
+      "phishing investigation",
+      "data exposure",
+      "brand impersonation scam",
+      "unauthenticated API vulnerability",
+      "advance fee fraud"
+    ]
+  }
+}
