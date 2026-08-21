@@ -35,14 +35,18 @@ Testing followed a manual, hypothesis-driven approach:
 
 ## Technology Stack Identified
 
-| Component | Technology |
-|-----------|------------|
-| CDN/WAF | Cloudflare |
-| Backend | Java (Hibernate ORM) |
-| Cache | Redis |
-| Infrastructure | Kubernetes |
-| Frontend | React |
-| Session | Cookie-based |
+**CDN / WAF:** Cloudflare.
+
+**Backend:** Java with Hibernate ORM.
+
+**Cache:** Redis.
+
+**Infrastructure:** Kubernetes.
+
+**Frontend:** React.
+
+**Session Management:** Cookie-based.
+
 
 ---
 
@@ -103,14 +107,18 @@ Multiple callbacks from dealer IP addresses confirmed:
 
 ## Dead Ends Investigated
 
-| Technique | Result |
-|-----------|--------|
-| Automated scanning | Blocked by Cloudflare WAF |
-| Direct XSS reflection | Blocked by WAF |
-| SQL injection | No errors, likely parameterized |
-| Subdomain brute force | Rate limited, low ROI |
-| Port scanning | Blocked by Cloudflare |
-| Email header injection | Server-side protection |
+**Automated Scanning:** Blocked by Cloudflare WAF.
+
+**Direct XSS Reflection:** Blocked by the WAF.
+
+**SQL Injection:** No errors observed; likely protected through parameterized queries.
+
+**Subdomain Brute Force:** Rate limited, resulting in low return on effort.
+
+**Port Scanning:** Blocked by Cloudflare.
+
+**Email Header Injection:** Server-side protections prevented exploitation.
+
 
 ---
 

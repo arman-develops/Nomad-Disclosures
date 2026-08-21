@@ -21,14 +21,17 @@ The organisation acknowledged the disclosure within 24 hours and convened a tech
 
 ## Scope and Authorization
 
-| Field | Detail |
-|---|---|
-| Target | Online recruitment platform operated by a national Kenyan agricultural body |
-| Platform Type | Custom PHP web application on Apache |
-| Engagement Type | Self-initiated responsible disclosure |
-| Scope | All functionality accessible via the recruitment subdomain |
-| Authentication | Researcher registered two applicant accounts |
-| Discovery Context | Found while using the platform as a genuine job applicant |
+**Target:** Online recruitment platform operated by a national Kenyan agricultural body.
+
+**Platform Type:** Custom PHP web application running on Apache.
+
+**Engagement Type:** Self-initiated responsible disclosure.
+
+**Scope:** All functionality accessible through the recruitment subdomain.
+
+**Authentication:** The researcher registered two applicant accounts for testing.
+
+**Discovery Context:** The issues were identified while using the platform as a genuine job applicant.
 
 The platform handles the full recruitment lifecycle: job listings, applicant registration, profile management (qualifications, employment history, referees), CV upload, and job application submission.
 
@@ -38,13 +41,18 @@ The platform handles the full recruitment lifecycle: job listings, applicant reg
 
 The assessment followed a structured five-phase approach, operating strictly within the researcher's own registered accounts except where access control failures were demonstrated in a controlled and non-destructive manner.
 
-| Phase | Focus |
-|---|---|
-| Recon / Enumeration | Platform fingerprinting, stack identification, endpoint discovery, registration and activation flow analysis |
-| Analysis | Parameter mapping, session behaviour, file upload validation, password reset flow analysis |
-| Exploitation | Confirmed cross-account activation code reuse, IDOR chain validation, XSS confirmation |
-| Chain Validation | End-to-end attack chain construction from email address to full account takeover |
-| Closure | Reporting, executive briefing, and coordinated disclosure |
+### Assessment Phases
+
+**Reconnaissance / Enumeration:** Platform fingerprinting, technology stack identification, endpoint discovery, registration and activation flow analysis.
+
+**Analysis:** Parameter mapping, session behaviour analysis, file upload validation, and password reset flow analysis.
+
+**Exploitation:** Confirmed cross-account activation code reuse, validated the IDOR chain, and confirmed XSS.
+
+**Chain Validation:** Constructed and validated the end-to-end attack chain from email address exposure to full account takeover.
+
+**Closure:** Reporting, executive briefing, and coordinated disclosure.
+
 
 **Ground rules applied throughout:**
 - No access to accounts not controlled by the researcher
@@ -223,19 +231,28 @@ Demonstrated using the researcher's own national ID across two researcher-contro
 
 ## Architecture Intelligence
 
-| Component | Detail |
-|---|---|
-| Recruitment platform stack | PHP / Apache 2.4.67 |
-| Main domain CMS | WordPress |
-| Database | MySQL (inferred) |
-| Request filtering | Apache-level block on PHP execution function names |
-| Input sanitisation (main app) | HTML entity encoding — effective |
-| Input sanitisation (error page) | PHP tag replacement only — JavaScript unfiltered |
-| File upload validation | Server-side extension whitelist — robust |
-| Session cookie flags | `HttpOnly` absent, `Secure` absent |
-| Account ID scheme | Sequential integers — enumerable |
-| Activation code scheme | 8-digit numeric — no predictability pattern |
-| Activation code lifecycle | No expiry, no single-use enforcement |
+**Recruitment Platform Stack:** PHP / Apache 2.4.67.
+
+**Main Domain CMS:** WordPress.
+
+**Database:** MySQL (inferred).
+
+**Request Filtering:** Apache-level blocking of PHP execution function names.
+
+**Input Sanitisation (Main Application):** HTML entity encoding — effective.
+
+**Input Sanitisation (Error Page):** PHP tag replacement only; JavaScript remained unfiltered.
+
+**File Upload Validation:** Server-side extension whitelist — robust.
+
+**Session Cookie Flags:** `HttpOnly` absent; `Secure` absent.
+
+**Account ID Scheme:** Sequential integers — enumerable.
+
+**Activation Code Scheme:** 8-digit numeric codes with no observed predictability pattern.
+
+**Activation Code Lifecycle:** No expiry and no single-use enforcement.
+
 
 **Observed additional subdomains:**
 - Management portal (authenticated — no foothold obtained)
@@ -306,8 +323,3 @@ The organisation acknowledged the disclosure within 24 hours and convened a tech
 
 *Assessment conducted under responsible disclosure principles. All testing performed ethically within defined scope boundaries. No real user data was accessed, modified, or exfiltrated.*
 
----
-
-Here's the metadata:
-
-```json
